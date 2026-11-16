@@ -276,3 +276,74 @@ export async function getStorageDiagnostics(): Promise<{
 
   return { mediaCount, usedBytes, quotaBytes };
 }
+
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ''));
+    reader.onerror = () =>
+      reject(reader.error ?? new Error('Failed to serialize media blob.'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+/**
+ * Exports referenced idb:// media Blobs as portable Base64 Data URLs
+ * for 1-Click JSON Catalog Backup.
+ */
+export async function exportMediaMapAsDataUrls(
+  refs: string[]
+): Promise<Record<string, string>> {
+  const uniqueIdbRefs = Array.from(new Set(refs.filter(isIdbMediaRef)));
+  const result: Record<string, string> = {};
+  if (uniqueIdbRefs.length === 0) return result;
+
+  try {
+    const db = await openDatabase();
+    for (const ref of uniqueIdbRefs) {
+      const id = extractMediaId(ref);
+      const blob = await new Promise<Blob | undefined>((resolve) => {
+        const tx = db.transaction(MEDIA_STORE, 'readonly');
+        const req = tx.objectStore(MEDIA_STORE).get(id);
+        req.onsuccess = () => resolve(req.result as Blob | undefined);
+        req.onerror = () => resolve(undefined);
+      });
+      if (blob) {
+        result[ref] = await blobToDataUrl(blob);
+      }
+    }
+    db.close();
+  } catch {
+    // Ignore export failure for unavailable IndexedDB entries
+  }
+
+  return result;
+}
+
+/**
+ * Restores a serialized Base64 Data URL image back into IndexedDB and returns a live idb:// ref.
+ */
+export async function saveMediaDataUrl(dataUrl: string): Promise<string> {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  const id = `media-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const ref = `${IDB_MEDIA_PREFIX}${id}`;
+
+  const objectUrl = URL.createObjectURL(blob);
+  objectUrlCache.set(ref, objectUrl);
+
+  try {
+    const db = await openDatabase();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(MEDIA_STORE, 'readwrite');
+      tx.objectStore(MEDIA_STORE).put(blob, id);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  } catch (err) {
+    console.warn('IndexedDB restore fallback:', err);
+  }
+
+  return ref;
+}

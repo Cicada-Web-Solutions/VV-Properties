@@ -23,6 +23,15 @@ export type AmenityKey =
   | 'solar-ready'
   | 'vaastu-compliant';
 
+export type BadgeTag =
+  | 'Featured'
+  | 'New Launch'
+  | 'Special Offer'
+  | 'Hot Deal'
+  | 'None';
+
+export type EnquiryStatus = 'new' | 'contacted' | 'closed' | 'reviewed';
+
 export interface PropertySpecifications {
   bedrooms?: number;
   bathrooms?: number;
@@ -47,6 +56,9 @@ export interface Property {
   offerPriceInr?: number;
   offerBadgeText?: string;
   offerEndDate?: string;
+  badgeTag?: BadgeTag;
+  customTypeLabel?: string;
+  customAmenities?: string[];
   availability: AvailabilityStatus;
   publishStatus: PublishStatus;
   displayOrder: number;
@@ -97,9 +109,48 @@ export interface Enquiry {
   propertyId: string;
   propertyTitle: string;
   message: string;
-  status: 'new' | 'reviewed';
+  status: EnquiryStatus;
   createdAt: string;
 }
+
+export interface TeamAccount {
+  id: string;
+  name: string;
+  username: string;
+  password: string;
+  role: string;
+  status: 'Active' | 'Suspended';
+  created: string;
+  photo?: string | null;
+}
+
+export interface AdminProfile {
+  displayName: string;
+  username: string;
+  password: string;
+  role: string;
+  avatar?: string | null;
+}
+
+export interface ActivityLogEntry {
+  id: string;
+  timestamp: number;
+  username: string;
+  action: string;
+  module: string;
+  dateStr: string;
+  status: 'Success' | 'Info' | 'Warning';
+}
+
+export type TrafficRangeKey =
+  | '24h'
+  | '1W'
+  | '1M'
+  | '3M'
+  | '6M'
+  | '1Y'
+  | 'MAX'
+  | 'custom';
 
 export interface PropertyFilterState {
   search: string;
@@ -112,9 +163,13 @@ export interface PropertyFilterState {
 }
 
 export interface AdminSession {
-  email: string;
+  username: string;
   name: string;
+  displayName: string;
+  email: string;
+  role: string;
   loggedInAt: string;
+  expiry?: number;
 }
 
 export type ToastType = 'success' | 'error' | 'info';

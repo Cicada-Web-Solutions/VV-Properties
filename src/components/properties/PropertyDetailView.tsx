@@ -413,7 +413,9 @@ export function PropertyDetailView() {
             </div>
 
             {/* Amenities Grid */}
-            {property.amenities.length > 0 && (
+            {(property.amenities.length > 0 ||
+              (property.customAmenities &&
+                property.customAmenities.length > 0)) && (
               <div>
                 <h2 className="font-display text-2xl font-medium text-[#0D0221]">
                   Amenities
@@ -433,6 +435,17 @@ export function PropertyDetailView() {
                       </div>
                     );
                   })}
+                  {(property.customAmenities ?? []).map((label) => (
+                    <div
+                      key={`custom-${label}`}
+                      className="flex flex-col items-center justify-center rounded-xl border border-[#0D0221]/12 bg-white px-3 py-4 text-center"
+                    >
+                      <Sparkles className="h-5 w-5 text-[#4062BB]" />
+                      <span className="mt-2 text-xs font-medium text-[#0D0221]">
+                        {label}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V.V Properties — Admin Portal</title>
+<style>
+:root {
+  --navy: #0D0221;
+  --blue: #4062BB;
+  --blue-hover: #314fa5;
+  --ice: #CDE6F5;
+  --pale: #EAF4FA;
+  --bg: #FFFFFF;
+  --panel-bg: #FFFFFF;
+  --ink: #17142B;
+  --muted: #64748B;
+  --line: #E2E8F0;
+  --green: #10B981;
+  --red: #EF4444;
+  --amber: #F59E0B;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  font: 14px/1.5 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { letter-spacing: -0.3px; color: #0f172a; margin: 0; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+
+/* Layout */
+.layout { min-height: 100vh; display: flex; }
+.side {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 240px;
+  background: var(--navy);
+  border-right: 1px solid #1e1438;
+  padding: 22px 16px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.logo {
+  height: 42px;
+  width: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #CDE6F5 0%, #4062BB 100%);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(64,98,187,0.3);
+}
+.brand b { font-size: 14px; letter-spacing: 0.6px; color: #fff; display: block; }
+.brand small { display: block; font-size: 10px; letter-spacing: 1.2px; color: #94a3b8; margin-top: 2px; }
+
+.nav-label {
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  color: #64748b;
+  font-weight: 700;
+  padding: 22px 10px 8px;
+}
+.nav { display: grid; gap: 4px; }
+.nav button {
+  border: 0;
+  background: transparent;
+  color: #cbd5e1;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+.nav button:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+.nav button.active {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(64,98,187,0.35);
+}
+.nav i { font-style: normal; width: 18px; text-align: center; font-size: 15px; }
+
+.sidebottom { margin-top: auto; }
+.admin {
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding: 16px 8px 4px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.avatar {
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #E0E7FF;
+  color: #3730A3;
+  font-weight: 700;
+  font-size: 13px;
+}
+.admin b { font-size: 12px; color: #fff; display: block; }
+.admin small { display: block; color: #94a3b8; font-size: 10px; }
+
+/* Main Content Area */
+.main {
+  margin-left: 240px;
+  flex: 1;
+  min-height: 100vh;
+  background: #FFFFFF;
+}
+
+.top {
+  height: 64px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.crumb { font-size: 12px; color: var(--muted); }
+.crumb b { color: var(--ink); font-weight: 600; }
+.topright {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: #475569;
+}
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 6px #10B981;
+}
+
+.content {
+  padding: 28px 32px 60px;
+  max-width: 1440px;
+  margin: auto;
+  background: #FFFFFF;
+}
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.15s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+.head h1 { font-size: 24px; font-weight: 700; color: #0f172a; }
+.head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+/* Buttons */
+.btn {
+  border: 1px solid var(--line);
+  background: #FFFFFF;
+  color: #334155;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+.btn:hover { background: #F8FAFC; border-color: #CBD5E1; }
+.btn.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(64,98,187,0.25);
+}
+.btn.primary:hover {
+  background: var(--blue-hover);
+  border-color: var(--blue-hover);
+}
+.btn.danger { color: var(--red); }
+.btn.danger:hover { background: #FEF2F2; border-color: #FCA5A5; }
+.btn.sm { padding: 5px 10px; font-size: 11px; border-radius: 6px; }
+
+/* Panels & Stats - Clean White Base */
+.panel, .stat {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+}
+.panel { padding: 20px; margin-bottom: 20px; }
+.panelhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.panelhead h3 { font-size: 15px; font-weight: 700; color: #0f172a; }
+.muted { color: var(--muted); font-size: 12px; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.stat { padding: 18px 20px; }
+.stat label { font-size: 12px; font-weight: 500; color: var(--muted); }
+.stat strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 6px 0 4px;
+  color: #0f172a;
+}
+.trend { font-size: 11px; font-weight: 600; color: var(--green); }
+
+/* Dashboard Grid */
+.dashgrid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+}
+.chartbox { height: 210px; position: relative; }
+.chartbox svg { width: 100%; height: 180px; overflow: visible; }
+.range {
+  display: flex;
+  gap: 4px;
+  background: #F1F5F9;
+  padding: 3px;
+  border-radius: 8px;
+}
+.range button {
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748B;
+}
+.range button.active {
+  background: #FFFFFF;
+  color: var(--blue);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; white-space: nowrap; }
+th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #64748B;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  background: #F8FAFC;
+}
+td {
+  padding: 12px;
+  border-bottom: 1px solid #F1F5F9;
+  font-size: 12px;
+  color: #334155;
+}
+tr:last-child td { border: 0; }
+.clickrow { cursor: pointer; transition: background 0.15s ease; }
+.clickrow:hover { background: #F8FAFC; }
+
+.pill {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.new { background: #ECFDF5; color: #065F46; }
+.contacted { background: #EFF6FF; color: #1E40AF; }
+.closed { background: #FEF2F2; color: #991B1B; }
+.published { background: #ECFDF5; color: #065F46; }
+.draft { background: #F1F5F9; color: #475569; }
+
+/* Toolbars */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.field {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #FFFFFF;
+  color: #334155;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.field:focus { border-color: var(--blue); }
+.search { min-width: 260px; }
+
+/* ========================================================
+   PROPERTY SECTION: COMPLETE OVERLAY ON HOVER, NO BOTTOM TEXT
+   ======================================================== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.property.image-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0D0221;
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 8px rgba(13, 2, 33, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  height: 260px;
+}
+
+.property.image-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(13, 2, 33, 0.14);
+}
+
+.property.image-card .photo {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: #EAF4FA;
+}
+
+.property.image-card .photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.property.image-card:hover .photo img {
+  transform: scale(1.05);
+}
+
+/* Badge in Top-Left */
+.tag {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  background: var(--blue);
+  color: #FFFFFF;
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  z-index: 5;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  pointer-events: none;
+}
+
+/* Vertical 3-Dots Button */
+.dots {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--navy);
+  font-size: 19px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  cursor: pointer;
+  z-index: 15;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.dots:hover {
+  background: #FFFFFF;
+  transform: scale(1.08);
+}
+
+/* Dropdown Menu (Edit, Rename, Delete) */
+.menu {
+  display: none;
+  position: absolute;
+  right: 12px;
+  top: 50px;
+  z-index: 25;
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 25px rgba(13, 2, 33, 0.18);
+  border-radius: 8px;
+  width: 135px;
+  padding: 5px;
+}
+
+.menu.open {
+  display: block;
+  animation: fadeInMenu 0.15s ease-out;
+}
+
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.menu button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.menu button:hover {
+  background: var(--pale);
+  color: var(--blue);
+}
+
+.menu .delete {
+  color: var(--red);
+}
+
+.menu .delete:hover {
+  background: #FEF2F2;
+  color: var(--red);
+}
+
+/* Full Overlay over image on pointer/hover */
+.hoverinfo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(13,2,33,0.96) 0%, rgba(13,2,33,0.72) 48%, rgba(13,2,33,0.08) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 18px;
+  color: #FFFFFF;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.property.image-card:hover .hoverinfo,
+.property.image-card.overlay-active .hoverinfo {
+  opacity: 1;
+}
+
+.hoverinfo b {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 2px;
+  line-height: 1.25;
+}
+
+.hoverinfo .hover-meta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ice);
+  margin-bottom: 4px;
+}
+
+.hoverinfo .hover-type {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #94A3B8;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.hoverinfo .hover-desc {
+  font-size: 11px;
+  line-height: 1.45;
+  color: #E2E8F0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ========================================================
+   BANNER MANAGEMENT (No Template Section, White Elevated Card)
+   ======================================================== */
+.bannerlist { display: grid; gap: 12px; }
+.banneritem {
+  display: grid;
+  grid-template-columns: 130px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  transition: border-color 0.15s ease;
+}
+.banneritem:hover { border-color: #CBD5E1; }
+.banneritem img {
+  width: 130px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #EAF4FA;
+}
+.banneritem b { font-size: 13px; font-weight: 600; color: #0f172a; }
+.banneritem small { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+.banneritem-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+.banner-dots {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: #FFFFFF;
+  color: #334155;
+  font-size: 16px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.drag-handle {
+  color: #94A3B8;
+  cursor: grab;
+  padding: 0 4px;
+  font-size: 16px;
+}
+
+#slideCapacity {
+  background: #FFFFFF;
+  color: #0f172a;
+  border: 1px solid var(--line);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.drop {
+  border: 1.5px dashed #93C5FD;
+  background: #F8FAFC;
+  border-radius: 10px;
+  padding: 26px;
+  text-align: center;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.drop:hover, .drop.drag {
+  background: #EFF6FF;
+  border-color: var(--blue);
+}
+.drop b { display: block; color: var(--blue); margin-bottom: 5px; font-size: 13px; }
+
+/* Testimonials */
+.testgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.testimonial {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.testimonial .stars { color: var(--amber); letter-spacing: 2px; font-size: 13px; }
+.testimonial p { font-size: 12px; color: #475569; line-height: 1.6; margin: 10px 0; }
+.testimonial b { font-size: 12px; color: #0f172a; }
+
+/* Modals & Drawers */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+.overlay.show { display: flex; animation: fadeIn 0.15s ease-out; }
+.modal {
+  background: #FFFFFF;
+  border-radius: 14px;
+  width: min(720px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+  border: 1px solid var(--line);
+}
+.modalhead {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modalhead h2 { font-size: 17px; font-weight: 700; }
+.x {
+  border: 0;
+  background: #F1F5F9;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  color: #64748B;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+.x:hover { background: #E2E8F0; color: #0f172a; }
+.modalbody { padding: 22px; }
+
+.formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.formfield { display: flex; flex-direction: column; gap: 6px; }
+.formfield.full { grid-column: 1 / -1; }
+.formfield label { font-size: 11px; font-weight: 700; color: #475569; }
+.formfield input, .formfield textarea, .formfield select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 12px;
+  color: #0f172a;
+  background: #FFFFFF;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.formfield input:focus, .formfield textarea:focus, .formfield select:focus {
+  border-color: var(--blue);
+}
+.formfield textarea { min-height: 75px; resize: vertical; }
+
+.modalfoot {
+  padding: 14px 22px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: #F8FAFC;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  z-index: 999;
+  display: none;
+  animation: slideUpToast 0.2s ease-out;
+}
+@keyframes slideUpToast {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Enquiry Drawer */
+.drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: min(390px, 95vw);
+  background: #FFFFFF;
+  z-index: 60;
+  box-shadow: -10px 0 30px rgba(15, 23, 42, 0.15);
+  transform: translateX(105%);
+  transition: transform 0.25s ease;
+  padding: 0 20px 24px;
+  overflow: auto;
+  border-left: 1px solid var(--line);
+}
+.drawer.show { transform: translateX(0); }
+.drawerhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+.customer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 18px 0;
+}
+.customer .avatar { width: 44px; height: 44px; font-size: 16px; }
+.customer b { font-size: 14px; color: #0f172a; display: block; }
+.customer small { display: block; color: var(--muted); margin-top: 2px; }
+.detailbox {
+  background: #F8FAFC;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 12px 0;
+}
+.detailbox label { font-size: 10px; color: #64748B; display: block; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
+.detailbox b, .detailbox p { font-size: 12px; margin: 0; line-height: 1.5; color: #1e293b; }
+.whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: #10B981;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 11px;
+  font-weight: 600;
+  margin-top: 16px;
+  text-decoration: none;
+  font-size: 12px;
+}
+.whatsapp:hover { background: #059669; }
+.copy { width: 100%; margin-top: 8px; justify-content: center; }
+
+/* Responsive */
+@media(max-width: 1050px) {
+  .cards, .testgrid { grid-template-columns: repeat(2, 1fr); }
+  .dashgrid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media(max-width: 700px) {
+  .side { width: 64px; padding: 16px 8px; }
+  .brand { justify-content: center; padding: 0 0 16px; }
+  .brand > div:last-child, .nav-label, .nav button span { display: none; }
+  .nav button { justify-content: center; padding: 12px 6px; }
+  .admin { justify-content: center; padding: 14px 0; }
+  .admin > div:last-child { display: none; }
+  .main { margin-left: 64px; }
+  .top { padding: 0 16px; }
+  .content { padding: 20px 16px; }
+  .cards, .testgrid { grid-template-columns: 1fr; }
+  .property.image-card { height: 280px; }
+  .stats { gap: 10px; }
+  .stat { padding: 14px; }
+  .formgrid { grid-template-columns: 1fr; }
+  .formfield.full { grid-column: auto; }
+  .banneritem { grid-template-columns: 90px 1fr; }
+  .banneritem img { width: 90px; }
+  .banneritem-actions { grid-column: 1 / -1; justify-content: flex-end; }
+  .head { flex-direction: column; align-items: stretch; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="side">
+    <div class="brand">
+      <div class="logo">⌂</div>
+      <div>
+        <b>V.V PROPERTIES</b>
+        <small>ADMIN PORTAL</small>
+      </div>
+    </div>
+
+    <div class="nav-label">WORKSPACE</div>
+    <nav class="nav">
+      <button class="active" data-page="dashboard"><i>▦</i><span>Dashboard</span></button>
+      <button data-page="properties"><i>⌂</i><span>Properties</span></button>
+      <button data-page="banners"><i>▧</i><span>Banner Management</span></button>
+      <button data-page="enquiries"><i>✉</i><span>Enquiries</span></button>
+      <button data-page="testimonials"><i>☆</i><span>Testimonials</span></button>
+    </nav>
+
+    <div class="sidebottom">
+      <div class="nav-label">ACCOUNT</div>
+      <nav class="nav">
+        <button data-page="profile"><i>◉</i><span>Admin Profile</span></button>
+        <button onclick="showToast('Logged out successfully')"><i>↪</i><span>Logout</span></button>
+      </nav>
+      <div class="admin">
+        <div class="avatar">A</div>
+        <div>
+          <b>Administrator</b>
+          <small>V.V Properties</small>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <main class="main">
+    <header class="top">
+      <div class="crumb">V.V Properties / <b id="crumb">Dashboard</b></div>
+      <div class="topright">
+        <span class="live-pill"><span class="live-dot"></span>Live Server Active</span>
+        <div class="avatar">A</div>
+        <b>Admin ▾</b>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ==================================================== -->
+      <!-- PAGE: DASHBOARD                                      -->
+      <!-- ==================================================== -->
+      <section class="page active" id="dashboard">
+        <div class="head">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Overview of your property listings and customer enquiries.</p>
+          </div>
+          <button class="btn primary" onclick="openAddPropertyModal()">＋ Add Property</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <label>Total Properties</label>
+            <strong id="dashTotalProps">10</strong>
+            <span class="trend">↑ 12% this period</span>
+          </div>
+          <div class="stat">
+            <label>Published</label>
+            <strong>8</strong>
+            <span class="trend">↑ 8% this period</span>
+          </div>
+          <div class="stat">
+            <label>Total Enquiries</label>
+            <strong>86</strong>
+            <span class="trend">↑ 15% this period</span>
+          </div>
+          <div class="stat">
+            <label>New Enquiries</label>
+            <strong>12</strong>
+            <span class="trend" style="color:var(--amber)">Needs follow-up</span>
+          </div>
+        </div>
+
+        <div class="dashgrid">
+          <div class="panel">
+            <div class="panelhead">
+              <h3>Performance</h3>
+              <div class="range" id="ranges">
+                <button class="active" data-range="1W">1 Week</button>
+                <button data-range="1M">1 Month</button>
+                <button data-range="3M">3 Months</button>
+                <button data-range="6M">6 Months</button>
+                <button data-range="1Y">1 Year</button>
+              </div>
+            </div>
+            <div class="chartbox">
+              <svg viewBox="0 0 620 190" preserveAspectRatio="none">
+                <g stroke="#F1F5F9" stroke-width="1">
+                  <path d="M40 15H610M40 55H610M40 95H610M40 135H610M40 175H610"/>
+                </g>
+                <g fill="#94A3B8" font-size="10">
+                  <text x="4" y="18">100</text>
+                  <text x="12" y="58">75</text>
+                  <text x="12" y="98">50</text>
+                  <text x="12" y="138">25</text>
+                  <text x="20" y="178">0</text>
+                </g>
+                <path id="chartArea" d="M40 142 L135 111 L230 119 L325 105 L420 68 L515 83 L610 45 L610 175 L40 175Z" fill="#EFF6FF"/>
+                <polyline id="chartLine" points="40,142 135,111 230,119 325,105 420,68 515,83 610,45" fill="none" stroke="#4062BB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <g id="chartDots" fill="#4062BB">
+                  <circle cx="40" cy="142" r="4"/><circle cx="135" cy="111" r="4"/><circle cx="230" cy="119" r="4"/>
+                  <circle cx="325" cy="105" r="4"/><circle cx="420" cy="68" r="4"/><circle cx="515" cy="83" r="4"/><circle cx="610" cy="45" r="4"/>
+                </g>
+                <g id="chartXLabels" fill="#94A3B8" font-size="10">
+                  <text x="35" y="188">Mon</text><text x="130" y="188">Tue</text><text x="225" y="188">Wed</text>
+                  <text x="320" y="188">Thu</text><text x="415" y="188">Fri</text><text x="510" y="188">Sat</text><text x="600" y="188">Sun</text>
+                </g>
+              </svg>
+            </div>
+            <div class="muted" id="chartCaption">Enquiries received during the last 7 days · Demo data</div>
+          </div>
+
+          <div class="panel">
+            <div class="panelhead">
+              <h3>Recent Enquiries</h3>
+              <button class="btn sm" onclick="go('enquiries')">View all →</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Property</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="clickrow" onclick="openEnquiry('Suresh Kumar','Lake View Residency','New','+91 98765 43210','suresh@gmail.com')">
+                  <td><b>Suresh Kumar</b><div class="muted">Today</div></td>
+                  <td>Lake View Residency</td>
+                  <td><span class="pill new">New</span></td>
+                </tr>
+                <tr class="clickrow" onclick="openEnquiry('Meena Priya','Green Avenue Villas','Contacted','+91 98765 12340','meena@gmail.com')">
+                  <td><b>Meena Priya</b><div class="muted">Yesterday</div></td>
+                  <td>Green Avenue Villas</td>
+                  <td><span class="pill contacted">Contacted</span></td>
+                </tr>
+                <tr class="clickrow" onclick="openEnquiry('Rohit Sharma','City Centre Plots','Closed','+91 99887 66554','rohit@gmail.com')">
+                  <td><b>Rohit Sharma</b><div class="muted">12 Nov</div></td>
+                  <td>City Centre Plots</td>
+                  <td><span class="pill closed">Closed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- PAGE: PROPERTIES                                     -->
+      <!-- ==================================================== -->
+      <section class="page" id="properties">
+        <div class="head">
+          <div>
+            <h1>Properties</h1>
+            <p>Hover over any property image to view full details. Use the vertical 3 dots (⋮) to edit, rename, or delete.</p>
+          </div>
+          <button class="btn primary" onclick="openAddPropertyModal()">＋ Add Property</button>
+        </div>
+
+        <div class="toolbar">
+          <input class="field search" id="propSearch" placeholder="Search property name or location..." oninput="filterProperties()">
+          <select class="field" id="propTypeFilter" onchange="filterProperties()">
+            <option value="">All property types</option>
+            <option value="Apartment">Apartment</option>
+            <option value="Villa">Villa</option>
+            <option value="Plot">Plot</option>
+          </select>
+          <select class="field" id="propTagFilter" onchange="filterProperties()">
+            <option value="">All tags</option>
+            <option value="Featured">Featured</option>
+            <option value="Special Offer">Special Offer</option>
+            <option value="New Launch">New Launch</option>
+          </select>
+        </div>
+
+        <!-- IMAGE-FIRST PROPERTY CARDS (NO BOTTOM CARD, COMPLETE HOVER OVERLAY) -->
+        <div class="cards" id="propertyCards"></div>
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- PAGE: BANNER MANAGEMENT (NO TEMPLATE SECTION)        -->
+      <!-- ==================================================== -->
+      <section class="page" id="banners">
+        <div class="head">
+          <div>
+            <h1>Banner Management</h1>
+            <p>Upload, edit and arrange the slides shown in the homepage carousel.</p>
+          </div>
+          <button class="btn primary" onclick="openModal('bannerModal')">＋ Add Banner</button>
+        </div>
+
+        <div class="panel">
+          <div class="panelhead">
+            <h3>Homepage Carousel</h3>
+            <span id="slideCapacity">3 / 10 Active</span>
+          </div>
+          <div class="muted" style="margin-bottom:14px">
+            Up to 10 slides can be stored. Keep up to 5 slides active on the homepage. Use the 3 dots (⋮) to toggle active state or delete.
+          </div>
+
+          <!-- BANNER LIST -->
+          <div class="bannerlist" id="bannerList"></div>
+
+          <!-- DRAG & DROP UPLOAD ZONE -->
+          <div class="drop" id="dropzone" style="margin-top:16px">
+            <b>＋ Drag & drop banner image here</b>
+            or click to browse from device · JPG, PNG, WebP · recommended 1920 × 720 px
+            <input id="bannerFile" type="file" accept="image/*" hidden>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- PAGE: ENQUIRIES                                      -->
+      <!-- ==================================================== -->
+      <section class="page" id="enquiries">
+        <div class="head">
+          <div>
+            <h1>Customer Enquiries</h1>
+            <p>Customer messages submitted through the website contact form.</p>
+          </div>
+          <button class="btn" onclick="showToast('Exporting enquiries CSV...')">Export CSV ↓</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><label>Total Enquiries</label><strong>86</strong></div>
+          <div class="stat"><label>New</label><strong style="color:var(--green)">12</strong></div>
+          <div class="stat"><label>Contacted</label><strong>49</strong></div>
+          <div class="stat"><label>Closed</label><strong style="color:var(--red)">25</strong></div>
+        </div>
+
+        <div class="panel">
+          <div class="toolbar">
+            <input class="field search" placeholder="Search customer name, phone or email...">
+            <select class="field">
+              <option>All statuses</option>
+              <option>New</option>
+              <option>Contacted</option>
+              <option>Closed</option>
+            </select>
+          </div>
+          <div class="muted" style="margin-bottom:12px">Click any customer row to view full details and launch direct WhatsApp chat.</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Interested Property</th>
+                <th>Submitted</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="clickrow" onclick="openEnquiry('Suresh Kumar','Lake View Residency','New','+91 98765 43210','suresh@gmail.com')">
+                <td><b>Suresh Kumar</b><div class="muted">+91 98765 43210</div></td>
+                <td>Lake View Residency</td>
+                <td>Today, 10:24 AM</td>
+                <td><span class="pill new">New</span></td>
+              </tr>
+              <tr class="clickrow" onclick="openEnquiry('Meena Priya','Green Avenue Villas','Contacted','+91 98765 12340','meena@gmail.com')">
+                <td><b>Meena Priya</b><div class="muted">+91 98765 12340</div></td>
+                <td>Green Avenue Villas</td>
+                <td>12 Nov, 3:15 PM</td>
+                <td><span class="pill contacted">Contacted</span></td>
+              </tr>
+              <tr class="clickrow" onclick="openEnquiry('Rohit Sharma','City Centre Plots','Closed','+91 99887 66554','rohit@gmail.com')">
+                <td><b>Rohit Sharma</b><div class="muted">+91 99887 66554</div></td>
+                <td>City Centre Plots</td>
+                <td>11 Nov, 11:05 AM</td>
+                <td><span class="pill closed">Closed</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- PAGE: TESTIMONIALS                                   -->
+      <!-- ==================================================== -->
+      <section class="page" id="testimonials">
+        <div class="head">
+          <div>
+            <h1>Testimonials</h1>
+            <p>Manage customer reviews shown on the public website.</p>
+          </div>
+          <button class="btn primary" onclick="openModal('testimonialModal')">＋ Add Testimonial</button>
+        </div>
+        <div class="testgrid" id="testCards"></div>
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- PAGE: ADMIN PROFILE                                  -->
+      <!-- ==================================================== -->
+      <section class="page" id="profile">
+        <div class="head">
+          <div>
+            <h1>Admin Profile</h1>
+            <p>Manage administrator account security and credentials.</p>
+          </div>
+        </div>
+        <div class="panel" style="max-width:640px">
+          <div class="formgrid">
+            <div class="formfield"><label>Username</label><input value="admin" readonly style="background:#F8FAFC"></div>
+            <div class="formfield"><label>Role</label><input value="Administrator" readonly style="background:#F8FAFC"></div>
+            <div class="formfield full"><label>Current password</label><input type="password" placeholder="••••••••"></div>
+            <div class="formfield"><label>New password</label><input type="password" placeholder="New password"></div>
+            <div class="formfield"><label>Confirm password</label><input type="password" placeholder="Confirm new password"></div>
+          </div>
+          <button class="btn primary" style="margin-top:16px" onclick="showToast('Password updated successfully')">Update Password</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: ADD / EDIT PROPERTY                               -->
+<!-- ======================================================== -->
+<div class="overlay" id="propertyModal">
+  <div class="modal">
+    <div class="modalhead">
+      <h2 id="propModalTitle">Add / Edit Property</h2>
+      <button class="x" onclick="closeModal('propertyModal')">×</button>
+    </div>
+    <div class="modalbody">
+      <input type="hidden" id="editPropIndex" value="-1">
+      <div class="formgrid">
+        <div class="formfield">
+          <label>Property Name *</label>
+          <input id="propNameInput" placeholder="e.g. Lake View Residency">
+        </div>
+        <div class="formfield">
+          <label>Property Type *</label>
+          <select id="propTypeInput">
+            <option value="Apartment · 2 BHK">Apartment · 2 BHK</option>
+            <option value="Apartment · 3 BHK">Apartment · 3 BHK</option>
+            <option value="Villa · 3 BHK">Villa · 3 BHK</option>
+            <option value="Villa · 4 BHK">Villa · 4 BHK</option>
+            <option value="Residential Plot">Residential Plot</option>
+            <option value="Commercial">Commercial</option>
+          </select>
+        </div>
+        <div class="formfield">
+          <label>Area / Location *</label>
+          <input id="propLocInput" placeholder="e.g. OMR, Chennai">
+        </div>
+        <div class="formfield">
+          <label>Price *</label>
+          <input id="propPriceInput" placeholder="e.g. ₹78 Lakhs">
+        </div>
+        <div class="formfield">
+          <label>Property Tag</label>
+          <select id="propTagInput">
+            <option value="Featured">Featured</option>
+            <option value="Special Offer">Special Offer</option>
+            <option value="New Launch">New Launch</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+        <div class="formfield">
+          <label>Cover Image URL</label>
+          <input id="propImageInput" placeholder="https://images.unsplash.com/...">
+        </div>
+        <div class="formfield full">
+          <label>Short Description (Shown on Image Hover Overlay) *</label>
+          <textarea id="propDescInput" placeholder="Description visible when hovering over the property image"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modalfoot">
+      <button class="btn" onclick="closeModal('propertyModal')">Cancel</button>
+      <button class="btn primary" onclick="saveProperty()">Save Property</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: RENAME PROPERTY                                   -->
+<!-- ======================================================== -->
+<div class="overlay" id="renameModal">
+  <div class="modal" style="max-width: 440px;">
+    <div class="modalhead">
+      <h2>Rename Property</h2>
+      <button class="x" onclick="closeModal('renameModal')">×</button>
+    </div>
+    <div class="modalbody">
+      <input type="hidden" id="renamePropIndex" value="-1">
+      <div class="formfield">
+        <label>New Property Name *</label>
+        <input id="renamePropInput" placeholder="Enter new title">
+      </div>
+    </div>
+    <div class="modalfoot">
+      <button class="btn" onclick="closeModal('renameModal')">Cancel</button>
+      <button class="btn primary" onclick="saveRename()">Rename</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: ADD / EDIT BANNER                                 -->
+<!-- ======================================================== -->
+<div class="overlay" id="bannerModal">
+  <div class="modal">
+    <div class="modalhead">
+      <h2>Add / Edit Banner</h2>
+      <button class="x" onclick="closeModal('bannerModal')">×</button>
+    </div>
+    <div class="modalbody">
+      <div class="formgrid">
+        <div class="formfield full">
+          <label>Banner Image URL</label>
+          <input id="bannerImgUrl" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1600596000844-4f6f3b6b8b2b?w=800&q=85">
+        </div>
+        <div class="formfield full">
+          <label>Headline *</label>
+          <input id="bannerHeadline" placeholder="Your banner headline" value="Exclusive Luxury Residences">
+        </div>
+        <div class="formfield full">
+          <label>Supporting Text</label>
+          <textarea id="bannerSubtext" placeholder="Short subheading">Discover serene living surrounded by nature.</textarea>
+        </div>
+        <div class="formfield">
+          <label>Status</label>
+          <select id="bannerStatus">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modalfoot">
+      <button class="btn" onclick="closeModal('bannerModal')">Cancel</button>
+      <button class="btn primary" onclick="addNewBanner()">Save Banner</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: TESTIMONIAL                                       -->
+<!-- ======================================================== -->
+<div class="overlay" id="testimonialModal">
+  <div class="modal" style="max-width: 520px;">
+    <div class="modalhead">
+      <h2>Add Testimonial</h2>
+      <button class="x" onclick="closeModal('testimonialModal')">×</button>
+    </div>
+    <div class="modalbody">
+      <div class="formgrid">
+        <div class="formfield full"><label>Customer Name *</label><input placeholder="e.g. Ramesh Kumar"></div>
+        <div class="formfield full"><label>Location / Property</label><input placeholder="e.g. OMR, Chennai"></div>
+        <div class="formfield full"><label>Review *</label><textarea placeholder="Customer feedback"></textarea></div>
+      </div>
+    </div>
+    <div class="modalfoot">
+      <button class="btn" onclick="closeModal('testimonialModal')">Cancel</button>
+      <button class="btn primary" onclick="closeModal('testimonialModal'); showToast('Testimonial saved');">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- ENQUIRY CUSTOMER DRAWER                                  -->
+<!-- ======================================================== -->
+<div class="drawer" id="enquiryDrawer">
+  <div class="drawerhead">
+    <h3>Customer Details</h3>
+    <button class="x" onclick="closeEnquiry()">×</button>
+  </div>
+  <div class="customer">
+    <div class="avatar" id="eAvatar">S</div>
+    <div>
+      <b id="eName">Suresh Kumar</b>
+      <small id="ePhone">+91 98765 43210</small>
+      <small id="eEmail">suresh@gmail.com</small>
+    </div>
+  </div>
+  <div class="detailbox">
+    <label>Enquiry Status</label>
+    <select class="field" id="eStatus" style="width:100%">
+      <option>New</option>
+      <option>Contacted</option>
+      <option>Closed</option>
+    </select>
+  </div>
+  <div class="detailbox">
+    <label>Interested Property</label>
+    <b id="eProperty">Lake View Residency</b>
+  </div>
+  <div class="detailbox">
+    <label>Customer Message</label>
+    <p>I would like to know more about this property and arrange a site visit. Please share more details.</p>
+  </div>
+  <div class="detailbox">
+    <label>Submitted On</label>
+    <b>14 Nov 2026 · 10:24 AM</b>
+  </div>
+  <a class="whatsapp" id="whatsappLink" href="https://wa.me/919876543210" target="_blank">
+    <span>WhatsApp Chat →</span>
+  </a>
+  <button class="btn copy" onclick="navigator.clipboard?.writeText(document.getElementById('ePhone').textContent); showToast('Phone copied');">
+    Copy Contact Details
+  </button>
+  <button class="btn primary copy" onclick="closeEnquiry(); showToast('Status updated');">
+    Save Status & Close
+  </button>
+</div>
+
+<!-- TOAST ALERT -->
+<div class="toast" id="toast">Changes saved</div>
+
+<!-- JAVASCRIPT APPLICATION LOGIC -->
+<script>
+const img1 = 'https://images.unsplash.com/photo-1600596000844-4f6f3b6b8b2b?w=800&q=85';
+const img2 = 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=85';
+const img3 = 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=85';
+
+// [Title, Location, Price, Tag, Type/BHK, Description, ImageURL]
+let properties = [
+  ['Lake View Residency', 'OMR, Chennai', '₹78 Lakhs', 'Featured', 'Apartment · 2 BHK', 'Premium apartments with a calm lake-facing view.', img1],
+  ['Green Avenue Villas', 'Kelambakkam', '₹1.25 Cr', 'Special Offer', 'Villa · 4 BHK', 'Spacious family villas with landscaped surroundings.', img2],
+  ['City Centre Plots', 'Tambaram', '₹32 Lakhs', 'New Launch', 'Residential Plot', 'Well-connected residential plots near key facilities.', img3],
+  ['Skyline Apartments', 'Sholinganallur', '₹1.10 Cr', 'Featured', 'Apartment · 3 BHK', 'Contemporary homes with open views and thoughtful layouts.', img2],
+  ['Garden View Villas', 'Medavakkam', '₹95 Lakhs', 'New Launch', 'Villa · 3 BHK', 'Private garden spaces in a peaceful residential community.', img1],
+  ['Royal Meadows', 'Pallikaranai', '₹72 Lakhs', 'Special Offer', 'Apartment · 2 BHK', 'Comfortable homes close to everyday conveniences.', img3],
+  ['Blue Horizon Villas', 'ECR, Chennai', '₹1.40 Cr', 'Featured', 'Villa · 4 BHK', 'Modern coastal-inspired villas with generous living spaces.', img2],
+  ['Vista Greens', 'Perumbakkam', '₹88 Lakhs', 'New Launch', 'Apartment · 3 BHK', 'Bright family apartments with landscaped surroundings.', img1],
+  ['Prime Residency', 'Porur, Chennai', '₹1.20 Cr', 'Featured', 'Apartment · 3 BHK', 'Well-planned residences with excellent city connectivity.', img3],
+  ['Emerald Park', 'Thoraipakkam', '₹76 Lakhs', 'Special Offer', 'Apartment · 2 BHK', 'A calm community designed for everyday family living.', img2]
+];
+
+// RENDER PROPERTY CARD: COMPLETELY IMAGE-FIRST, NO BOTTOM CARD, OVERLAY ON HOVER/POINTER
+function card(p, i) {
+  const badgeHtml = (p[3] && p[3] !== 'None') ? `<span class="tag">${p[3]}</span>` : '';
+  return `
+    <article class="property image-card" data-index="${i}" onclick="handleCardClick(event, ${i})">
+      <div class="photo">
+        <img src="${p[6] || img1}" alt="${p[0]}" loading="lazy">
+        ${badgeHtml}
+        
+        <!-- VERTICAL 3 DOTS (⋮) BUTTON -->
+        <button class="dots" aria-label="Property options" title="Property options" onclick="toggleMenu(event, ${i})">&#8942;</button>
+        
+        <!-- 3-DOTS DROPDOWN: EDIT, RENAME, DELETE -->
+        <div class="menu" id="menu${i}">
+          <button type="button" onclick="editProperty(event, ${i})">
+            <span>✏️</span> <span>Edit</span>
+          </button>
+          <button type="button" onclick="openRenameModal(event, ${i})">
+            <span>🏷️</span> <span>Rename</span>
+          </button>
+          <button type="button" class="delete" onclick="deleteProperty(event, ${i})">
+            <span>🗑️</span> <span>Delete</span>
+          </button>
+        </div>
+
+        <!-- FULL OVERLAY OVER IMAGE ON HOVER / POINTER -->
+        <div class="hoverinfo">
+          <b>${p[0]}</b>
+          <div class="hover-meta">${p[1]} · ${p[2]}</div>
+          <div class="hover-type">${p[4]}</div>
+          <div class="hover-desc">${p[5]}</div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderProperties(list = properties) {
+  const container = document.getElementById('propertyCards');
+  if (!container) return;
+  if (list.length === 0) {
+    container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 48px; color: #94A3B8; background: #FFFFFF; border: 1px dashed #E2E8F0; border-radius: 12px;">No properties found.</div>`;
+    return;
+  }
+  container.innerHTML = list.map((p, i) => card(p, properties.indexOf(p) !== -1 ? properties.indexOf(p) : i)).join('');
+  const dashCount = document.getElementById('dashTotalProps');
+  if (dashCount) dashCount.textContent = properties.length;
+}
+
+// TAP ON CARD TOGGLES OVERLAY FOR TOUCH DEVICES
+function handleCardClick(e, i) {
+  if (e.target.closest('.dots') || e.target.closest('.menu')) return;
+  const cardEl = e.currentTarget;
+  cardEl.classList.toggle('overlay-active');
+}
+
+// 3-DOTS VERTICAL MENU TOGGLE
+function toggleMenu(e, i) {
+  e.stopPropagation();
+  const menu = document.getElementById('menu' + i);
+  const isOpen = menu && menu.classList.contains('open');
+  closeAllMenus();
+  if (!isOpen && menu) {
+    menu.classList.add('open');
+  }
+}
+
+function closeAllMenus() {
+  document.querySelectorAll('.menu').forEach(m => m.classList.remove('open'));
+}
+
+// EDIT PROPERTY
+function editProperty(e, i) {
+  e.stopPropagation();
+  closeAllMenus();
+  const p = properties[i];
+  if (!p) return;
+  document.getElementById('editPropIndex').value = i;
+  document.getElementById('propModalTitle').textContent = 'Edit Property';
+  document.getElementById('propNameInput').value = p[0];
+  document.getElementById('propLocInput').value = p[1];
+  document.getElementById('propPriceInput').value = p[2];
+  document.getElementById('propTagInput').value = p[3] || 'None';
+  document.getElementById('propTypeInput').value = p[4] || 'Apartment · 2 BHK';
+  document.getElementById('propDescInput').value = p[5];
+  document.getElementById('propImageInput').value = p[6];
+  openModal('propertyModal');
+}
+
+function openAddPropertyModal() {
+  document.getElementById('editPropIndex').value = -1;
+  document.getElementById('propModalTitle').textContent = 'Add Property';
+  document.getElementById('propNameInput').value = '';
+  document.getElementById('propLocInput').value = '';
+  document.getElementById('propPriceInput').value = '';
+  document.getElementById('propTagInput').value = 'Featured';
+  document.getElementById('propTypeInput').value = 'Apartment · 2 BHK';
+  document.getElementById('propDescInput').value = '';
+  document.getElementById('propImageInput').value = img1;
+  openModal('propertyModal');
+}
+
+function saveProperty() {
+  const index = parseInt(document.getElementById('editPropIndex').value, 10);
+  const name = document.getElementById('propNameInput').value.trim();
+  const loc = document.getElementById('propLocInput').value.trim();
+  const price = document.getElementById('propPriceInput').value.trim();
+  const tag = document.getElementById('propTagInput').value;
+  const type = document.getElementById('propTypeInput').value;
+  const desc = document.getElementById('propDescInput').value.trim();
+  const img = document.getElementById('propImageInput').value.trim() || img1;
+
+  if (!name || !loc || !price) {
+    alert('Please enter property name, location and price.');
+    return;
+  }
+
+  if (index >= 0 && properties[index]) {
+    properties[index] = [name, loc, price, tag, type, desc, img];
+    showToast(`Updated "${name}"`);
+  } else {
+    properties.unshift([name, loc, price, tag, type, desc, img]);
+    showToast(`Added "${name}"`);
+  }
+  closeModal('propertyModal');
+  renderProperties();
+}
+
+// RENAME PROPERTY MODAL
+function openRenameModal(e, i) {
+  e.stopPropagation();
+  closeAllMenus();
+  const p = properties[i];
+  if (!p) return;
+  document.getElementById('renamePropIndex').value = i;
+  document.getElementById('renamePropInput').value = p[0];
+  openModal('renameModal');
+  setTimeout(() => document.getElementById('renamePropInput').focus(), 100);
+}
+
+function saveRename() {
+  const i = parseInt(document.getElementById('renamePropIndex').value, 10);
+  const newName = document.getElementById('renamePropInput').value.trim();
+  if (!newName) {
+    alert('Property name cannot be empty');
+    return;
+  }
+  if (properties[i]) {
+    const oldName = properties[i][0];
+    properties[i][0] = newName;
+    renderProperties();
+    closeModal('renameModal');
+    showToast(`Renamed "${oldName}" to "${newName}"`);
+  }
+}
+
+// DELETE PROPERTY
+function deleteProperty(e, i) {
+  e.stopPropagation();
+  closeAllMenus();
+  const name = properties[i]?.[0] || 'this property';
+  if (confirm(`Are you sure you want to delete "${name}"?`)) {
+    properties.splice(i, 1);
+    renderProperties();
+    showToast(`Deleted "${name}"`);
+  }
+}
+
+// FILTER PROPERTIES
+function filterProperties() {
+  const q = (document.getElementById('propSearch')?.value || '').toLowerCase();
+  const typeFilter = document.getElementById('propTypeFilter')?.value || '';
+  const tagFilter = document.getElementById('propTagFilter')?.value || '';
+
+  const filtered = properties.filter(p => {
+    const matchQuery = !q || p[0].toLowerCase().includes(q) || p[1].toLowerCase().includes(q);
+    const matchType = !typeFilter || p[4].includes(typeFilter);
+    const matchTag = !tagFilter || p[3] === tagFilter;
+    return matchQuery && matchType && matchTag;
+  });
+  renderProperties(filtered);
+}
+
+// GLOBAL EVENT LISTENERS
+document.addEventListener('click', () => closeAllMenus());
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show'));
+    closeEnquiry();
+    closeAllMenus();
+  }
+});
+
+// NAVIGATION
+const pageNames = {
+  dashboard: 'Dashboard',
+  properties: 'Properties',
+  banners: 'Banner Management',
+  enquiries: 'Customer Enquiries',
+  testimonials: 'Testimonials',
+  profile: 'Admin Profile'
+};
+
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === id));
+  const crumb = document.getElementById('crumb');
+  if (crumb) crumb.textContent = pageNames[id] || 'Workspace';
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => go(b.dataset.page));
+
+// MODALS
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('show');
+}
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('show');
+}
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => {
+  if (e.target === o) o.classList.remove('show');
+}));
+
+// TOAST
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t.timer);
+  t.timer = setTimeout(() => { t.style.display = 'none'; }, 2600);
+}
+
+// ENQUIRY DRAWER
+function openEnquiry(name, property, status, phone, email) {
+  document.getElementById('eName').textContent = name;
+  document.getElementById('eAvatar').textContent = name[0];
+  document.getElementById('eProperty').textContent = property;
+  document.getElementById('eStatus').value = status;
+  document.getElementById('ePhone').textContent = phone;
+  document.getElementById('eEmail').textContent = email;
+  const digits = phone.replace(/\D/g, '');
+  document.getElementById('whatsappLink').href = 'https://wa.me/' + digits;
+  document.getElementById('enquiryDrawer').classList.add('show');
+}
+function closeEnquiry() {
+  document.getElementById('enquiryDrawer').classList.remove('show');
+}
+
+// PERFORMANCE CHART RANGES
+const ranges = {
+  '1W': { caption: 'Enquiries received during the last 7 days · Demo data', pts: [142,111,119,105,68,83,45], labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
+  '1M': { caption: 'Enquiries during the last 30 days · Demo data', pts: [140,125,115,128,83,70,42], labels: ['Week 1','Week 2','Week 3','Week 4','','',''] },
+  '3M': { caption: 'Enquiries over the last 3 months · Demo data', pts: [145,130,110,115,83,65,40], labels: ['Aug','Sep','Oct','','','',''] },
+  '6M': { caption: 'Enquiries over the last 6 months · Demo data', pts: [150,138,117,105,79,64,35], labels: ['Jun','Jul','Aug','Sep','Oct','Nov',''] },
+  '1Y': { caption: 'Enquiries over the last 12 months · Demo data', pts: [153,139,132,111,92,69,32], labels: ['Dec','Feb','Apr','Jun','Aug','Oct','Nov'] }
+};
+
+document.getElementById('ranges')?.querySelectorAll('button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('#ranges button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const d = ranges[b.dataset.range];
+    const xs = [40, 135, 230, 325, 420, 515, 610];
+    const points = d.pts.map((y, i) => xs[i] + ',' + y).join(' ');
+    document.getElementById('chartLine').setAttribute('points', points);
+    document.getElementById('chartArea').setAttribute('d', 'M' + xs[0] + ' ' + d.pts[0] + ' ' + xs.slice(1).map((x, i) => 'L' + x + ' ' + d.pts[i+1]).join(' ') + ' L610 175 L40 175 Z');
+    document.getElementById('chartCaption').textContent = d.caption;
+  };
+});
+
+// ========================================================
+// BANNER MANAGEMENT (NO TEMPLATES)
+// ========================================================
+const bannerData = [
+  ['Find your dream home', 'Explore selected homes and prime properties.', 'Active', img1],
+  ['A better address for your future', 'Discover spaces designed around you.', 'Active', img2],
+  ['Make your next move', 'Find the right property with V.V Properties.', 'Inactive', img3]
+];
+
+function renderBanners() {
+  const container = document.getElementById('bannerList');
+  if (!container) return;
+  container.innerHTML = bannerData.map((b, i) => `
+    <div class="banneritem" data-index="${i}">
+      <img src="${b[3]}" alt="Banner ${i+1}">
+      <div>
+        <b>${b[0]}</b>
+        <small>${b[1]} · Slide ${i+1}</small>
+      </div>
+      <div class="banneritem-actions">
+        <span class="pill ${b[2] === 'Active' ? 'published' : 'draft'}">${b[2]}</span>
+        <button class="btn sm" onclick="toggleBannerStatus(${i})">${b[2] === 'Active' ? 'Deactivate' : 'Activate'}</button>
+        <button class="btn sm danger" onclick="deleteBanner(${i})">Delete</button>
+        <span class="drag-handle" title="Drag handle">⠿</span>
+      </div>
+    </div>
+  `).join('');
+
+  const activeCount = bannerData.filter(b => b[2] === 'Active').length;
+  const capEl = document.getElementById('slideCapacity');
+  if (capEl) capEl.textContent = `${activeCount} / 10 Active`;
+}
+
+function toggleBannerStatus(i) {
+  if (bannerData[i][2] !== 'Active' && bannerData.filter(b => b[2] === 'Active').length >= 5) {
+    alert('A maximum of 5 slides can be active at the same time.');
+    return;
+  }
+  bannerData[i][2] = bannerData[i][2] === 'Active' ? 'Inactive' : 'Active';
+  renderBanners();
+  showToast(`Banner set to ${bannerData[i][2]}`);
+}
+
+function deleteBanner(i) {
+  if (confirm('Delete this banner slide?')) {
+    bannerData.splice(i, 1);
+    renderBanners();
+    showToast('Banner slide deleted');
+  }
+}
+
+function addNewBanner() {
+  const headline = document.getElementById('bannerHeadline').value.trim();
+  const subtext = document.getElementById('bannerSubtext').value.trim();
+  const status = document.getElementById('bannerStatus').value;
+  const imgUrl = document.getElementById('bannerImgUrl').value.trim() || img1;
+
+  if (!headline) {
+    alert('Please enter a banner headline');
+    return;
+  }
+
+  bannerData.push([headline, subtext, status, imgUrl]);
+  renderBanners();
+  closeModal('bannerModal');
+  showToast('New banner added');
+}
+
+// BANNER DROPZONE
+const drop = document.getElementById('dropzone');
+const fileInput = document.getElementById('bannerFile');
+if (drop && fileInput) {
+  drop.onclick = () => fileInput.click();
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add('drag'); };
+  drop.ondragleave = () => drop.classList.remove('drag');
+  drop.ondrop = e => {
+    e.preventDefault();
+    drop.classList.remove('drag');
+    if (e.dataTransfer.files.length > 0) {
+      showToast(`${e.dataTransfer.files.length} banner file(s) uploaded`);
+    }
+  };
+  fileInput.onchange = () => {
+    if (fileInput.files.length > 0) {
+      showToast(`${fileInput.files.length} banner file(s) selected`);
+    }
+  };
+}
+
+// TESTIMONIALS
+document.getElementById('testCards').innerHTML = [
+  ['Meena R', 'OMR, Chennai', 'Professional support throughout the process. Highly recommend V.V Properties for residential investments.'],
+  ['Karthik S', 'Kelambakkam', 'Clear communication, prompt site visits, and completely transparent documentation.'],
+  ['Priya Sharma', 'Chennai', 'They helped us find the right gated community villa for our family within our planned budget.']
+].map(t => `
+  <article class="testimonial">
+    <div class="stars">★★★★★</div>
+    <p>“${t[2]}”</p>
+    <b>${t[0]}</b>
+    <div class="muted">${t[1]}</div>
+    <div style="margin-top:14px; display:flex; gap:8px;">
+      <button class="btn sm" onclick="openModal('testimonialModal')">Edit</button>
+      <button class="btn sm danger" onclick="this.closest('.testimonial').remove(); showToast('Testimonial removed');">Delete</button>
+    </div>
+  </article>
+`).join('');
+
+// INITIAL RENDER
+renderProperties();
+renderBanners();
+</script>
+</body>
+</html>
