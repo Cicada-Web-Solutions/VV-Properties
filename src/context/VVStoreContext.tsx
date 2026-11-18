@@ -39,6 +39,12 @@ import {
   SYNC_CHANNEL_NAME,
   type VVCatalogSnapshot,
 } from '@/lib/storage';
+import { supabase } from '@/lib/supabase/client';
+import {
+  deletePropertyFromSupabase,
+  fetchPropertiesFromSupabase,
+  savePropertyToSupabase,
+} from '@/lib/supabase/properties';
 import type {
   ActivityLogEntry,
   AdminProfile,
@@ -199,7 +205,7 @@ function collectAllMediaRefs(snapshot: VVCatalogSnapshot): string[] {
 export function VVStoreProvider({ children }: { children: React.ReactNode }) {
   const [snapshot, setSnapshot] = useState<VVCatalogSnapshot>(() => ({
     version: 2,
-    properties: INITIAL_PROPERTIES,
+    properties: [],
     heroSlides: INITIAL_HERO_SLIDES,
     testimonials: INITIAL_TESTIMONIALS,
     enquiries: INITIAL_ENQUIRIES,
@@ -231,12 +237,25 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  // Initial hydration + multi-tab live synchronization
+  // Initial hydration + multi-tab & multi-device live synchronization
   useEffect(() => {
     let cancelled = false;
 
     const refreshFromStore = async () => {
       const loaded = await loadPersistedCatalog();
+
+      // Sync from authoritative Supabase Cloud database
+      try {
+        const cloudProperties = await fetchPropertiesFromSupabase();
+        if (cloudProperties !== null) {
+          // Cloud database is authoritative (including empty [] when properties deleted)
+          loaded.properties = cloudProperties;
+          void persistCatalogSnapshot(loaded, false);
+        }
+      } catch (err) {
+        console.warn('[VVStore] Supabase properties sync warning:', err);
+      }
+
       if (!cancelled) {
         snapshotRef.current = loaded;
         setSnapshot(loaded);
@@ -246,6 +265,7 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
 
     void refreshFromStore();
 
+    // Browser-local sync via BroadcastChannel
     let channel: BroadcastChannel | null = null;
     if ('BroadcastChannel' in window) {
       channel = new BroadcastChannel(SYNC_CHANNEL_NAME);
@@ -253,6 +273,18 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         void refreshFromStore();
       };
     }
+
+    // Cross-device live Realtime sync via Supabase
+    const supabaseChannel = supabase
+      .channel('public_properties_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'properties' },
+        () => {
+          void refreshFromStore();
+        }
+      )
+      .subscribe();
 
     const onStorage = (e: StorageEvent) => {
       if (e.key === LIGHTWEIGHT_SYNC_KEY) {
@@ -264,6 +296,7 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
       channel?.close();
+      void supabase.removeChannel(supabaseChannel);
       window.removeEventListener('storage', onStorage);
     };
   }, []);
@@ -302,6 +335,10 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         createdAt: now,
         updatedAt: now,
       };
+
+      // Persist to Supabase cloud
+      void savePropertyToSupabase(created);
+
       await commitUpdate((curr) => ({
         ...curr,
         properties: [created, ...curr.properties],
@@ -341,6 +378,14 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
+      if (existing) {
+        void savePropertyToSupabase({
+          ...existing,
+          ...patch,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+
       await commitUpdate((curr) => {
         const title = patch.title ?? existing?.title ?? 'Property';
         return {
@@ -368,17 +413,18 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
       const existing = snapshotRef.current.properties.find((p) => p.id === id);
       if (!existing) return;
 
+      const updatedTitleSlug = {
+        ...existing,
+        title: trimmed,
+        slug: `${makePropertySlug(trimmed)}-${existing.id.slice(-4)}`,
+        updatedAt: new Date().toISOString(),
+      };
+      void savePropertyToSupabase(updatedTitleSlug);
+
       await commitUpdate((curr) => ({
         ...curr,
         properties: curr.properties.map((p) =>
-          p.id === id
-            ? {
-                ...p,
-                title: trimmed,
-                slug: `${makePropertySlug(trimmed)}-${p.id.slice(-4)}`,
-                updatedAt: new Date().toISOString(),
-              }
-            : p
+          p.id === id ? updatedTitleSlug : p
         ),
         activityLogs: appendLog(
           curr.activityLogs ?? [],
@@ -392,6 +438,9 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
 
   const deleteProperty = useCallback(
     async (id: string) => {
+      // 1. Delete from Supabase cloud database
+      void deletePropertyFromSupabase(id);
+
       const target = snapshotRef.current.properties.find((p) => p.id === id);
       if (target) {
         void deleteMediaRefs(
@@ -414,6 +463,13 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
   const setPropertyAvailability = useCallback(
     async (id: string, availability: AvailabilityStatus) => {
       const existing = snapshotRef.current.properties.find((p) => p.id === id);
+      if (existing) {
+        void savePropertyToSupabase({
+          ...existing,
+          availability,
+          updatedAt: new Date().toISOString(),
+        });
+      }
       await commitUpdate((curr) => ({
         ...curr,
         properties: curr.properties.map((p) =>
@@ -434,6 +490,13 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
   const setPropertyPublishStatus = useCallback(
     async (id: string, publishStatus: PublishStatus) => {
       const existing = snapshotRef.current.properties.find((p) => p.id === id);
+      if (existing) {
+        void savePropertyToSupabase({
+          ...existing,
+          publishStatus,
+          updatedAt: new Date().toISOString(),
+        });
+      }
       await commitUpdate((curr) => ({
         ...curr,
         properties: curr.properties.map((p) =>

@@ -1,12 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const defaultUrl = 'https://keafzoktjrbcdgsmurdr.supabase.co';
+const defaultAnonKey = 'sb_publishable_3w3eXnfJxtgRQZLRHXo8tw_ZI-easpr';
 
-if (!supabaseUrl && typeof window !== 'undefined') {
-  console.warn('[Supabase Client] NEXT_PUBLIC_SUPABASE_URL is not configured.');
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || defaultUrl;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || defaultAnonKey;
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {

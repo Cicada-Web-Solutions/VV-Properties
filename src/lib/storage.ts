@@ -44,7 +44,7 @@ export const SYNC_CHANNEL_NAME = 'vv-properties-sync-v1';
 export function getInitialSnapshot(): VVCatalogSnapshot {
   return {
     version: 2,
-    properties: INITIAL_PROPERTIES,
+    properties: [],
     heroSlides: INITIAL_HERO_SLIDES,
     testimonials: INITIAL_TESTIMONIALS,
     enquiries: INITIAL_ENQUIRIES,
@@ -68,7 +68,7 @@ function migrateSnapshot(raw: Partial<VVCatalogSnapshot>): VVCatalogSnapshot {
     version: 2,
     properties: Array.isArray(raw.properties)
       ? raw.properties
-      : INITIAL_PROPERTIES,
+      : [],
     heroSlides: Array.isArray(raw.heroSlides)
       ? raw.heroSlides
       : INITIAL_HERO_SLIDES,
