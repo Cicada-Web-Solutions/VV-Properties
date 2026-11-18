@@ -22,7 +22,7 @@ export function toAppProperty(row: any): Property {
     typeof extra.priceInr === 'number'
       ? extra.priceInr
       : typeof row.total_price === 'number'
-        ? row.total_price * 100000 // If stored in lakhs
+        ? row.total_price * 100000
         : 5000000;
 
   return {
@@ -129,61 +129,85 @@ export function toSupabaseRow(p: Property): any {
 }
 
 /**
- * Loads all properties from Supabase cloud.
- * Returns null if network error or unconfigured, or an array (including empty []).
+ * Loads all properties from Supabase cloud (direct or via API).
+ * Returns null if network error, or an array (including empty []).
  */
 export async function fetchPropertiesFromSupabase(): Promise<Property[] | null> {
+  // Try direct Supabase select (public read allowed by RLS)
   try {
     const { data, error } = await supabase
       .from('properties')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) {
-      console.warn('[Supabase] Failed to fetch properties:', error.message);
-      return null;
+    if (!error && Array.isArray(data)) {
+      return data.map(toAppProperty);
     }
-
-    if (!Array.isArray(data)) return null;
-
-    return data.map(toAppProperty);
   } catch (err) {
-    console.warn('[Supabase] Unexpected error fetching properties:', err);
-    return null;
+    console.warn('[Supabase Direct Read Fallback]', err);
   }
+
+  // Fallback to internal API route
+  try {
+    const res = await fetch('/api/properties');
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.properties)) {
+        return json.properties;
+      }
+    }
+  } catch (apiErr) {
+    console.warn('[API properties fetch error]', apiErr);
+  }
+
+  return null;
 }
 
 /**
- * Inserts or updates a property in Supabase cloud.
+ * Inserts or updates a property in Supabase cloud via API route (bypasses RLS safely).
  */
 export async function savePropertyToSupabase(p: Property): Promise<boolean> {
   try {
-    const row = toSupabaseRow(p);
-    const { error } = await supabase.from('properties').upsert(row);
-    if (error) {
-      console.warn('[Supabase] Failed to upsert property:', error.message);
-      return false;
+    const res = await fetch('/api/properties', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ property: p }),
+    });
+    if (res.ok) {
+      return true;
     }
-    return true;
-  } catch (err) {
-    console.warn('[Supabase] Unexpected error saving property:', err);
+  } catch {
+    // If running offline or serverless cold start, try direct client upsert
+  }
+
+  try {
+    const row = toSupabaseRow(p);
+    const { error } = await (supabase.from('properties') as any).upsert(row);
+    return !error;
+  } catch {
     return false;
   }
 }
 
 /**
- * Deletes a property from Supabase cloud by id.
+ * Deletes a property from Supabase cloud by id via API route (bypasses RLS safely).
  */
 export async function deletePropertyFromSupabase(id: string): Promise<boolean> {
   try {
-    const { error } = await supabase.from('properties').delete().eq('id', id);
-    if (error) {
-      console.warn('[Supabase] Failed to delete property:', error.message);
-      return false;
+    const res = await fetch(`/api/properties?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      return true;
     }
-    return true;
-  } catch (err) {
-    console.warn('[Supabase] Unexpected error deleting property:', err);
+  } catch {
+    // Fallback to direct client delete
+  }
+
+  try {
+    const { error } = await supabase.from('properties').delete().eq('id', id);
+    return !error;
+  } catch {
     return false;
   }
 }
