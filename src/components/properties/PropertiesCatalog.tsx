@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Building, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PropertyCard } from '@/components/properties/PropertyCard';
@@ -8,6 +8,7 @@ import { PropertyFiltersBar } from '@/components/properties/PropertyFiltersBar';
 import { AccentHeadline } from '@/components/ui/AccentHeadline';
 import { useVVStore } from '@/context/VVStoreContext';
 import { useScrollReveal } from '@/hooks/useGsapReveal';
+import { supabase } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import type { PropertyFilterState, PropertyType } from '@/types';
 
@@ -37,9 +38,30 @@ function parseInitialType(raw: string | null): PropertyType | 'all' {
 }
 
 export function PropertiesCatalog() {
-  const { publishedProperties, isHydrated } = useVVStore();
+  const { publishedProperties, isHydrated, refreshCatalog } = useVVStore();
   const searchParams = useSearchParams();
   const gridRef = useRef<HTMLDivElement>(null);
+
+  // Sync with live Supabase database on mount & subscribe to real-time changes
+  useEffect(() => {
+    void refreshCatalog();
+
+    const channel = supabase
+      .channel('public_properties_catalog_sync')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'properties' },
+        () => {
+          console.log('[PropertiesCatalog] Realtime change detected, refreshing...');
+          void refreshCatalog();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [refreshCatalog]);
 
   const [filters, setFilters] = useState<PropertyFilterState>(() => ({
     ...DEFAULT_FILTERS,

@@ -26,8 +26,8 @@ export function toAppProperty(row: any): Property {
         : 5000000;
 
   // Status mapping: 'Available' -> available, 'Sold'/'Sold Out' -> sold, 'Draft' -> unpublished
-  const isSold = row.status === 'Sold' || row.status === 'Sold Out';
-  const isDraft = row.status === 'Draft';
+  const isSold = String(row.status || '').toLowerCase().includes('sold');
+  const isDraft = String(row.status || '').toLowerCase() === 'draft';
 
   return {
     id: row.id,
@@ -99,11 +99,11 @@ export function toSupabaseRow(p: Property): any {
     facing: p.specifications?.facing,
   };
 
-  const totalPriceLakhs = Math.round(p.priceInr / 100000);
+  const totalPriceLakhs = Number((p.priceInr / 100000).toFixed(2));
   const priceDisplay =
     p.priceInr >= 10000000
-      ? `₹${(p.priceInr / 10000000).toFixed(2)} Cr`
-      : `₹${(p.priceInr / 100000).toFixed(1)} L`;
+      ? `₹${(p.priceInr / 10000000).toFixed(2).replace(/\.00$/, '')} Cr`
+      : `₹${(p.priceInr / 100000).toFixed(2).replace(/\.00$/, '')} L`;
 
   // Map to valid status: 'Available', 'Sold', or 'Draft'
   const status =
@@ -111,7 +111,7 @@ export function toSupabaseRow(p: Property): any {
       ? 'Sold'
       : p.publishStatus === 'unpublished'
         ? 'Draft'
-        : 'Available';
+        : (p.badgeTag === 'New Launch' ? 'New Launch' : (p.badgeTag === 'Fast Selling' ? 'Fast Selling' : 'Available'));
 
   return {
     id: p.id,

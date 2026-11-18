@@ -28,6 +28,8 @@ export type BadgeTag =
   | 'New Launch'
   | 'Special Offer'
   | 'Hot Deal'
+  | 'Fast Selling'
+  | 'Available'
   | 'None';
 
 export type EnquiryStatus = 'new' | 'contacted' | 'closed' | 'reviewed';

@@ -114,29 +114,44 @@ export function getAmenityLabelsForProperty(property: Property): string[] {
 }
 
 /**
- * Parses INR price strings like "₹1.85 Cr", "₹78 L", "68500000", "₹45,00,000" into numeric INR.
+ * Parses INR price strings like "₹1.85 Cr", "4.5", "1.25", "₹78 L", "45.50 Lakhs", "68500000" into exact numeric INR.
+ * Supports float/decimal precision without integer rounding.
  */
-export function parseInrPriceInput(raw: string): number {
-  const cleaned = raw.trim().toLowerCase().replace(/[₹,\s]/g, '');
+export function parseInrPriceInput(raw: string | number): number {
+  if (typeof raw === 'number') return Number.isFinite(raw) ? raw : 0;
+  const cleaned = String(raw).trim().toLowerCase().replace(/[₹,\s]/g, '');
   if (!cleaned) return 0;
 
   const crMatch = cleaned.match(/^([\d.]+)(?:cr|crore|crores)$/);
   if (crMatch) {
-    return Math.round(parseFloat(crMatch[1]) * 10_000_000);
+    const val = parseFloat(crMatch[1]);
+    return Number.isFinite(val) ? val * 10_000_000 : 0;
   }
 
   const lakhMatch = cleaned.match(/^([\d.]+)(?:l|lac|lacs|lakh|lakhs)$/);
   if (lakhMatch) {
-    return Math.round(parseFloat(lakhMatch[1]) * 100_000);
+    const val = parseFloat(lakhMatch[1]);
+    return Number.isFinite(val) ? val * 100_000 : 0;
   }
 
   const kMatch = cleaned.match(/^([\d.]+)k$/);
   if (kMatch) {
-    return Math.round(parseFloat(kMatch[1]) * 1_000);
+    const val = parseFloat(kMatch[1]);
+    return Number.isFinite(val) ? val * 1_000 : 0;
   }
 
-  const num = Number(cleaned.replace(/[^0-9.]/g, ''));
-  return Number.isFinite(num) && num > 0 ? Math.round(num) : 0;
+  const num = parseFloat(cleaned);
+  if (!Number.isFinite(num) || num <= 0) return 0;
+
+  // Decimal shorthand: < 20 with dot is Crores (e.g. 4.5 -> 4.5 Cr), <= 500 with dot is Lakhs (e.g. 45.50 -> 45.5 L)
+  if (num < 20 && cleaned.includes('.')) {
+    return num * 10_000_000;
+  }
+  if (num <= 500 && cleaned.includes('.')) {
+    return num * 100_000;
+  }
+
+  return num;
 }
 
 export function normalizePropertyType(rawType: string): PropertyType {
