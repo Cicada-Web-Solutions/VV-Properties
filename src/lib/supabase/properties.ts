@@ -25,6 +25,10 @@ export function toAppProperty(row: any): Property {
         ? row.total_price * 100000
         : 5000000;
 
+  // Status mapping: 'Available' -> available, 'Sold'/'Sold Out' -> sold, 'Draft' -> unpublished
+  const isSold = row.status === 'Sold' || row.status === 'Sold Out';
+  const isDraft = row.status === 'Draft';
+
   return {
     id: row.id,
     slug: row.slug || row.id,
@@ -40,8 +44,8 @@ export function toAppProperty(row: any): Property {
     badgeTag: row.badge || extra.badgeTag || 'None',
     customTypeLabel: extra.customTypeLabel,
     customAmenities: extra.customAmenities,
-    availability: row.status === 'Sold Out' ? 'sold' : 'available',
-    publishStatus: row.status === 'Draft' ? 'unpublished' : 'published',
+    availability: isSold ? 'sold' : 'available',
+    publishStatus: isDraft ? 'unpublished' : 'published',
     displayOrder: typeof extra.displayOrder === 'number' ? extra.displayOrder : 1,
     coverImage: row.cover_image || '',
     galleryImages: Array.isArray(row.gallery)
@@ -55,10 +59,10 @@ export function toAppProperty(row: any): Property {
       : [row.description || ''],
     specifications: extra.specifications || {
       bedrooms: row.bedrooms || 3,
-      bathrooms: row.bathrooms || 3,
+      bathrooms: extra.bathrooms || 3,
       areaSqFt: row.area_sqft || 2000,
-      possessionStatus: row.status || 'Ready for Handover',
-      facing: extra.facing || 'East',
+      possessionStatus: row.status || 'Available',
+      facing: extra.facing || 'North-East',
     },
     amenities: Array.isArray(row.amenities) ? row.amenities : [],
     whyBuyPoints: Array.isArray(extra.whyBuyPoints) ? extra.whyBuyPoints : [],
@@ -71,6 +75,8 @@ export function toAppProperty(row: any): Property {
 
 /**
  * Transforms an application Property model into a Supabase database row.
+ * NOTE: The Supabase `properties` table schema does NOT contain a `bathrooms` column.
+ * `bathrooms` is safely serialized inside `ai_generated_summary`.
  */
 export function toSupabaseRow(p: Property): any {
   const extra = {
@@ -99,29 +105,31 @@ export function toSupabaseRow(p: Property): any {
       ? `₹${(p.priceInr / 10000000).toFixed(2)} Cr`
       : `₹${(p.priceInr / 100000).toFixed(1)} L`;
 
+  // Map to valid status: 'Available', 'Sold', or 'Draft'
+  const status =
+    p.availability === 'sold'
+      ? 'Sold'
+      : p.publishStatus === 'unpublished'
+        ? 'Draft'
+        : 'Available';
+
   return {
     id: p.id,
     title: p.title,
-    slug: p.slug,
+    slug: p.slug || `${p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${p.id.slice(-4)}`,
     project_title: p.title,
-    type: p.type,
-    location: `${p.area}, ${p.city}`,
-    total_price: totalPriceLakhs,
+    type: p.type || 'Villa',
+    location: `${p.area || 'Chennai'}, ${p.city || 'Tamil Nadu'}`,
+    total_price: totalPriceLakhs || 100,
     price_display: priceDisplay,
     area_sqft: p.specifications?.areaSqFt || 2000,
     bedrooms: p.specifications?.bedrooms || 3,
-    bathrooms: p.specifications?.bathrooms || 3,
-    status:
-      p.availability === 'sold'
-        ? 'Sold Out'
-        : p.publishStatus === 'unpublished'
-          ? 'Draft'
-          : 'Available',
+    status,
     badge: p.badgeTag && p.badgeTag !== 'None' ? p.badgeTag : null,
-    cover_image: p.coverImage || '',
+    cover_image: p.coverImage || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=80',
     gallery: p.galleryImages || [],
     amenities: p.amenities || [],
-    description: p.shortDescription || '',
+    description: p.shortDescription || `${p.title} curated by V.V Properties.`,
     ai_generated_summary: JSON.stringify(extra),
     is_featured: p.badgeTag === 'Featured',
     updated_at: new Date().toISOString(),
@@ -133,7 +141,7 @@ export function toSupabaseRow(p: Property): any {
  * Returns null if network error, or an array (including empty []).
  */
 export async function fetchPropertiesFromSupabase(): Promise<Property[] | null> {
-  // Try direct Supabase select (public read allowed by RLS)
+  // 1. Try direct Supabase select (public read is allowed by RLS)
   try {
     const { data, error } = await supabase
       .from('properties')
@@ -141,20 +149,27 @@ export async function fetchPropertiesFromSupabase(): Promise<Property[] | null> 
       .order('created_at', { ascending: false });
 
     if (!error && Array.isArray(data)) {
+      console.log(`[Supabase Direct Read] Successfully loaded ${data.length} properties.`);
       return data.map(toAppProperty);
+    }
+    if (error) {
+      console.warn('[Supabase Direct Read Warning]', error.message, error.details);
     }
   } catch (err) {
     console.warn('[Supabase Direct Read Fallback]', err);
   }
 
-  // Fallback to internal API route
+  // 2. Fallback to internal API route if direct read encountered issues
   try {
-    const res = await fetch('/api/properties');
+    const res = await fetch('/api/properties', { cache: 'no-store' });
     if (res.ok) {
       const json = await res.json();
       if (json.success && Array.isArray(json.properties)) {
+        console.log(`[API properties fetch] Successfully loaded ${json.properties.length} properties.`);
         return json.properties;
       }
+    } else {
+      console.warn(`[API properties fetch] HTTP status ${res.status}`);
     }
   } catch (apiErr) {
     console.warn('[API properties fetch error]', apiErr);
@@ -167,6 +182,9 @@ export async function fetchPropertiesFromSupabase(): Promise<Property[] | null> 
  * Inserts or updates a property in Supabase cloud via API route (bypasses RLS safely).
  */
 export async function savePropertyToSupabase(p: Property): Promise<boolean> {
+  const row = toSupabaseRow(p);
+
+  // 1. Try server-side API route (uses server admin client to bypass RLS)
   try {
     const res = await fetch('/api/properties', {
       method: 'POST',
@@ -174,17 +192,31 @@ export async function savePropertyToSupabase(p: Property): Promise<boolean> {
       body: JSON.stringify({ property: p }),
     });
     if (res.ok) {
-      return true;
+      const data = await res.json();
+      if (data.success) {
+        console.log(`[Supabase API Save] Successfully saved "${p.title}" (ID: ${p.id})`);
+        return true;
+      }
+      console.warn('[Supabase API Save Error Response]', data.error);
+    } else {
+      const errText = await res.text();
+      console.warn(`[Supabase API Save] HTTP ${res.status}:`, errText);
     }
-  } catch {
-    // If running offline or serverless cold start, try direct client upsert
+  } catch (apiErr) {
+    console.warn('[Supabase API Save Request Failed]', apiErr);
   }
 
+  // 2. Direct Supabase client fallback
   try {
-    const row = toSupabaseRow(p);
     const { error } = await (supabase.from('properties') as any).upsert(row);
-    return !error;
-  } catch {
+    if (error) {
+      console.error('[Supabase Direct Save Error]', error.message, error.details);
+      return false;
+    }
+    console.log(`[Supabase Direct Save] Successfully upserted "${p.title}" (ID: ${p.id})`);
+    return true;
+  } catch (err) {
+    console.error('[Supabase Direct Save Unexpected Error]', err);
     return false;
   }
 }
@@ -193,21 +225,33 @@ export async function savePropertyToSupabase(p: Property): Promise<boolean> {
  * Deletes a property from Supabase cloud by id via API route (bypasses RLS safely).
  */
 export async function deletePropertyFromSupabase(id: string): Promise<boolean> {
+  // 1. Try server-side API route
   try {
     const res = await fetch(`/api/properties?id=${encodeURIComponent(id)}`, {
       method: 'DELETE',
     });
     if (res.ok) {
-      return true;
+      const data = await res.json();
+      if (data.success) {
+        console.log(`[Supabase API Delete] Successfully deleted ID: ${id}`);
+        return true;
+      }
     }
-  } catch {
-    // Fallback to direct client delete
+  } catch (apiErr) {
+    console.warn('[Supabase API Delete Fallback]', apiErr);
   }
 
+  // 2. Fallback to direct client delete
   try {
     const { error } = await supabase.from('properties').delete().eq('id', id);
-    return !error;
-  } catch {
+    if (error) {
+      console.error('[Supabase Direct Delete Error]', error.message);
+      return false;
+    }
+    console.log(`[Supabase Direct Delete] Successfully deleted ID: ${id}`);
+    return true;
+  } catch (err) {
+    console.error('[Supabase Direct Delete Unexpected Error]', err);
     return false;
   }
 }

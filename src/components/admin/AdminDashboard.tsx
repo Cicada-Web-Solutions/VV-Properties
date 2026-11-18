@@ -111,6 +111,7 @@ export function AdminDashboard() {
     exportCatalogBackup,
     importCatalogBackup,
     resetAllDemoData,
+    refreshCatalog,
   } = useVVStore();
 
   const isClient = useIsClient();
@@ -582,6 +583,8 @@ export function AdminDashboard() {
               {activeTab === 'properties' && (
                 <PropertiesTab
                   properties={properties}
+                  isHydrated={isHydrated}
+                  onRefresh={refreshCatalog}
                   onAddProperty={() => {
                     setEditingProperty(null);
                     setPropertyModalOpen(true);
@@ -789,6 +792,7 @@ export function AdminDashboard() {
               await addProperty(payload);
               notify(`Added "${payload.title}"`, 'success');
             }
+            await refreshCatalog();
           }}
         />
       )}

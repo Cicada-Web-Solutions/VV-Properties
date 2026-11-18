@@ -143,6 +143,7 @@ interface VVStoreContextValue {
     enquiriesCount: number;
   }>;
   resetAllDemoData: () => Promise<void>;
+  refreshCatalog: () => Promise<void>;
 }
 
 const VVStoreContext = createContext<VVStoreContextValue | null>(null);
@@ -301,6 +302,27 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const refreshCatalog = useCallback(async () => {
+    try {
+      console.log('[VVStore] refreshCatalog triggered: fetching latest from Supabase...');
+      const cloudProperties = await fetchPropertiesFromSupabase();
+      if (cloudProperties !== null) {
+        setSnapshot((curr) => {
+          const next = {
+            ...curr,
+            properties: cloudProperties,
+            updatedAt: new Date().toISOString(),
+          };
+          snapshotRef.current = next;
+          void persistCatalogSnapshot(next, false);
+          return next;
+        });
+      }
+    } catch (err) {
+      console.warn('[VVStore] refreshCatalog error:', err);
+    }
+  }, []);
+
   const commitUpdate = useCallback(
     async (updater: (current: VVCatalogSnapshot) => VVCatalogSnapshot) => {
       const next = updater(snapshotRef.current);
@@ -336,18 +358,23 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         updatedAt: now,
       };
 
-      // Persist to Supabase cloud
-      void savePropertyToSupabase(created);
+      // 1. Immediately persist to Supabase cloud database
+      const cloudSuccess = await savePropertyToSupabase(created);
+      if (!cloudSuccess) {
+        console.warn(`[VVStore] Cloud save had an issue; continuing with local persistence.`);
+      }
 
+      // 2. Commit to local context & IndexedDB
       await commitUpdate((curr) => ({
         ...curr,
-        properties: [created, ...curr.properties],
+        properties: [created, ...curr.properties.filter((p) => p.id !== created.id)],
         activityLogs: appendLog(
           curr.activityLogs ?? [],
           `Added new property listing "${created.title}"`,
           'Properties'
         ),
       }));
+
       return created;
     },
     [commitUpdate]
@@ -379,11 +406,12 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (existing) {
-        void savePropertyToSupabase({
+        const updated = {
           ...existing,
           ...patch,
           updatedAt: new Date().toISOString(),
-        });
+        };
+        await savePropertyToSupabase(updated);
       }
 
       await commitUpdate((curr) => {
@@ -419,7 +447,7 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         slug: `${makePropertySlug(trimmed)}-${existing.id.slice(-4)}`,
         updatedAt: new Date().toISOString(),
       };
-      void savePropertyToSupabase(updatedTitleSlug);
+      await savePropertyToSupabase(updatedTitleSlug);
 
       await commitUpdate((curr) => ({
         ...curr,
@@ -439,7 +467,7 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
   const deleteProperty = useCallback(
     async (id: string) => {
       // 1. Delete from Supabase cloud database
-      void deletePropertyFromSupabase(id);
+      await deletePropertyFromSupabase(id);
 
       const target = snapshotRef.current.properties.find((p) => p.id === id);
       if (target) {
@@ -464,7 +492,7 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
     async (id: string, availability: AvailabilityStatus) => {
       const existing = snapshotRef.current.properties.find((p) => p.id === id);
       if (existing) {
-        void savePropertyToSupabase({
+        await savePropertyToSupabase({
           ...existing,
           availability,
           updatedAt: new Date().toISOString(),
@@ -491,7 +519,7 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
     async (id: string, publishStatus: PublishStatus) => {
       const existing = snapshotRef.current.properties.find((p) => p.id === id);
       if (existing) {
-        void savePropertyToSupabase({
+        await savePropertyToSupabase({
           ...existing,
           publishStatus,
           updatedAt: new Date().toISOString(),
@@ -1140,6 +1168,7 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
     exportCatalogBackup,
     importCatalogBackup,
     resetAllDemoData,
+    refreshCatalog,
   };
 
   return (

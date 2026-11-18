@@ -37,7 +37,7 @@ function parseInitialType(raw: string | null): PropertyType | 'all' {
 }
 
 export function PropertiesCatalog() {
-  const { publishedProperties } = useVVStore();
+  const { publishedProperties, isHydrated } = useVVStore();
   const searchParams = useSearchParams();
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -212,25 +212,39 @@ export function PropertiesCatalog() {
       {/* Grid & Pagination */}
       <section className="py-12 sm:py-16 lg:py-20">
         <div ref={gridRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {paginated.length === 0 ? (
+          {!isHydrated ? (
+            <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div
+                  key={i}
+                  className="h-96 animate-pulse rounded-2xl border border-[#0D0221]/8 bg-[#CDE6F5]/25"
+                />
+              ))}
+            </div>
+          ) : paginated.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#0D0221]/20 bg-[#CDE6F5]/15 px-6 py-20 text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#4062BB] shadow-xs">
                 <Building className="h-6 w-6" />
               </div>
               <h2 className="mt-4 font-display text-3xl font-medium text-[#0D0221]">
-                No properties match your filters
+                {publishedProperties.length === 0
+                  ? 'No properties currently listed'
+                  : 'No properties match your filters'}
               </h2>
               <p className="mt-2 max-w-md text-sm text-[#0D0221]/70">
-                Try clearing a region selection or expanding your INR budget
-                range to browse the full curated catalogue.
+                {publishedProperties.length === 0
+                  ? 'Our portfolio is currently being updated with new premium developments. Please check back shortly or contact our advisory team.'
+                  : 'Try clearing a region selection or expanding your INR budget range to browse the full curated catalogue.'}
               </p>
-              <button
-                type="button"
-                onClick={handleReset}
-                className="mt-6 rounded-lg bg-[#4062BB] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0D0221]"
-              >
-                Reset All Filters
-              </button>
+              {publishedProperties.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="mt-6 rounded-lg bg-[#4062BB] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0D0221]"
+                >
+                  Reset All Filters
+                </button>
+              )}
             </div>
           ) : (
             <>
