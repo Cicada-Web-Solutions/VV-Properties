@@ -18,12 +18,17 @@ export function toAppProperty(row: any): Property {
   const area = extra.area || (locationParts[0] ? locationParts[0].trim() : 'Chennai');
   const city = extra.city || (locationParts[1] ? locationParts[1].trim() : 'Tamil Nadu');
 
-  const priceInr =
-    typeof extra.priceInr === 'number'
-      ? extra.priceInr
-      : typeof row.total_price === 'number'
-        ? row.total_price * 100000
-        : 5000000;
+  let priceInr = 0;
+  if (typeof extra.priceInr === 'number' && Number.isFinite(extra.priceInr) && extra.priceInr > 0) {
+    priceInr = extra.priceInr;
+  } else if (typeof row.total_price === 'number' && Number.isFinite(row.total_price) && row.total_price > 0) {
+    priceInr = row.total_price < 10000 ? row.total_price * 100000 : row.total_price;
+  } else if (row.price_display) {
+    const rawVal = parseFloat(String(row.price_display).replace(/[₹,\s]/g, ''));
+    if (Number.isFinite(rawVal) && rawVal > 0) {
+      priceInr = rawVal < 10000 ? rawVal * 100000 : rawVal;
+    }
+  }
 
   // Status mapping: 'Available' -> available, 'Sold'/'Sold Out' -> sold, 'Draft' -> unpublished
   const isSold = String(row.status || '').toLowerCase().includes('sold');
@@ -149,8 +154,9 @@ export async function fetchPropertiesFromSupabase(): Promise<Property[] | null> 
       .order('created_at', { ascending: false });
 
     if (!error && Array.isArray(data)) {
-      console.log(`[Supabase Direct Read] Successfully loaded ${data.length} properties.`);
-      return data.map(toAppProperty);
+      const validRows = data.filter((r: any) => !String(r.id || '').startsWith('__system_config'));
+      console.log(`[Supabase Direct Read] Successfully loaded ${validRows.length} properties.`);
+      return validRows.map(toAppProperty);
     }
     if (error) {
       console.warn('[Supabase Direct Read Warning]', error.message, error.details);

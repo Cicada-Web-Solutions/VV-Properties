@@ -1,11 +1,14 @@
 import { SITE_CONFIG } from '@/config/site';
 
 /**
- * Formats an authoritative INR amount using the Indian numbering system (e.g. ₹ 6,85,00,000).
+ * Formats an authoritative INR amount using the Indian numbering system (e.g. ₹ 6,85,00,000 or ₹ 25,00,000.50).
  */
 export function formatINR(amount: number): string {
-  if (!Number.isFinite(amount)) return '₹ 0';
-  return `₹ ${Math.round(amount).toLocaleString('en-IN')}`;
+  if (!Number.isFinite(amount) || amount <= 0) return 'Price on Request';
+  const hasDecimals = (amount % 1) !== 0;
+  const intPart = Math.floor(amount);
+  const decPart = hasDecimals ? (amount % 1).toFixed(2).slice(1) : '';
+  return `₹ ${intPart.toLocaleString('en-IN')}${decPart}`;
 }
 
 /**
@@ -13,7 +16,7 @@ export function formatINR(amount: number): string {
  * No currency conversion or exchange rates are used.
  */
 export function formatINRCompact(amount: number): string {
-  if (!Number.isFinite(amount) || amount <= 0) return '₹ 0';
+  if (!Number.isFinite(amount) || amount <= 0) return 'Price on Request';
   if (amount >= 10000000) {
     const cr = amount / 10000000;
     return `₹ ${cr.toFixed(2).replace(/\.00$/, '')} Cr`;

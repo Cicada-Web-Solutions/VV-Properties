@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     let query = supabase
       .from("properties")
       .select("*")
+      .not("id", "like", "__system_config%")
       .order("is_featured", { ascending: false })
       .order("created_at", { ascending: false });
 
@@ -49,8 +50,8 @@ export async function POST(req: NextRequest) {
     const nowIso = new Date().toISOString();
     const propId = propData.id || `prop_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     
-    // Parse numeric prices supporting decimal floats (e.g. 4.5 Lakhs, 1.25 Cr, 45.75)
-    let rawPrice = propData.totalPrice ?? propData.price ?? propData.total_price ?? 0;
+    // Parse numeric prices supporting decimal floats (e.g. 4.5 Lakhs, 1.25 Cr, 45.75, or priceInr raw)
+    let rawPrice = propData.priceInr ?? propData.price_display ?? propData.priceDisplay ?? propData.totalPrice ?? propData.price ?? propData.total_price ?? 0;
     if (typeof rawPrice === 'string') {
       const cleaned = rawPrice.replace(/[₹,\s]/g, '').toLowerCase();
       if (cleaned.includes('cr')) {
@@ -61,7 +62,10 @@ export async function POST(req: NextRequest) {
         rawPrice = parseFloat(cleaned) || 0;
       }
     }
-    const totalPriceFloat = Number(parseFloat(String(rawPrice || 0)).toFixed(2));
+    let totalPriceFloat = Number(parseFloat(String(rawPrice || 0)).toFixed(2));
+    if (totalPriceFloat > 10000) {
+      totalPriceFloat = Number((totalPriceFloat / 100000).toFixed(2));
+    }
 
     const priceDisplay =
       propData.priceDisplay ||

@@ -5,6 +5,9 @@ import { HeroCarousel } from '@/components/landing/HeroCarousel';
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 import { WhoWeAreSection } from '@/components/landing/WhoWeAreSection';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 /**
  * Landing Page following the exact wireframe order:
  * Header (RootLayout) -> Banner Carousel -> Who We Are -> Testimonials -> About -> Contact -> Footer (RootLayout)

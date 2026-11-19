@@ -311,12 +311,8 @@ export function AdminDashboard() {
 
   const displayedName =
     liveDisplayNamePreview !== null
-      ? liveDisplayNamePreview || adminProfile.displayName
-      : session.username.toLowerCase() ===
-            adminProfile.username.toLowerCase() ||
-          session.username.toLowerCase() === 'victor'
-        ? adminProfile.displayName
-        : session.displayName;
+      ? liveDisplayNamePreview || session.displayName || adminProfile.displayName
+      : session.displayName || adminProfile.displayName;
 
   const navItems: {
     id: AdminTab;

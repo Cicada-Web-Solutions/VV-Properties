@@ -94,9 +94,11 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
               )}
             >
               <span>{formatINR(displayPrice)}</span>
-              <span className="text-[11px] font-medium text-[#4062BB]">
-                ({formatINRCompact(displayPrice)})
-              </span>
+              {formatINRCompact(displayPrice) !== formatINR(displayPrice) && (
+                <span className="text-[11px] font-medium text-[#4062BB]">
+                  ({formatINRCompact(displayPrice)})
+                </span>
+              )}
             </span>
             {hasOffer && !isSold && (
               <s className="text-xs font-medium text-[#0D0221]/45">
