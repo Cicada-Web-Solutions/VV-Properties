@@ -100,8 +100,8 @@ export async function POST(req: NextRequest) {
           ? propData.galleryImages
           : [],
       amenities: propData.amenities || [],
-      description: propData.description || null,
-      ai_generated_summary: propData.ai_generated_summary || propData.shortDescription || null,
+      description: propData.shortDescription || propData.description || propData.ai_generated_summary || null,
+      ai_generated_summary: propData.ai_generated_summary || propData.shortDescription || propData.description || null,
       updated_at: nowIso,
     };
 

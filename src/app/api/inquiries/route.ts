@@ -5,8 +5,9 @@ import { isManagement, isAgent } from "@/lib/rbac";
 
 const inquirySchema = z.object({
   propertyId: z.string().optional().nullable(),
-  clientName: z.string().min(2, "Full name required"),
-  phone: z.string().min(10, "Valid phone number required"),
+  clientName: z.string().min(2, "Full name required").optional(),
+  fullName: z.string().min(2, "Full name required").optional(),
+  phone: z.string().min(7, "Valid phone number required"),
   email: z.string().email().optional().or(z.literal("")),
   inquiryType: z.enum([
     "general",
@@ -93,7 +94,7 @@ export async function POST(req: NextRequest) {
       .from("inquiries") as any)
       .insert({
         property_id: data.propertyId || null,
-        client_name: data.clientName.trim(),
+        client_name: (data.clientName || data.fullName || "Valued Client").trim(),
         phone: data.phone.trim(),
         email: data.email ? data.email.trim() : null,
         inquiry_type: data.inquiryType,
@@ -154,6 +155,33 @@ export async function PATCH(req: NextRequest) {
       success: true,
       message: "Inquiry pipeline updated successfully",
       inquiry: updated,
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Inquiry ID is required" }, { status: 400 });
+    }
+
+    const supabase = createAdminClient();
+    const { error } = await supabase.from("inquiries").delete().eq("id", id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      deletedId: id,
+      message: "Inquiry deleted successfully",
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Internal server error";

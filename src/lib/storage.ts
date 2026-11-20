@@ -67,7 +67,7 @@ function migrateSnapshot(raw: Partial<VVCatalogSnapshot>): VVCatalogSnapshot {
   return {
     version: 2,
     properties: Array.isArray(raw.properties)
-      ? raw.properties
+      ? raw.properties.filter((p) => p && !p.title?.includes('(Sample)'))
       : [],
     heroSlides: Array.isArray(raw.heroSlides)
       ? raw.heroSlides

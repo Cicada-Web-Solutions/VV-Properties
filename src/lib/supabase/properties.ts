@@ -34,6 +34,23 @@ export function toAppProperty(row: any): Property {
   const isSold = String(row.status || '').toLowerCase().includes('sold');
   const isDraft = String(row.status || '').toLowerCase() === 'draft';
 
+  const plainTextSummary =
+    typeof row.ai_generated_summary === 'string' && !row.ai_generated_summary.trim().startsWith('{')
+      ? row.ai_generated_summary.trim()
+      : '';
+
+  const parsedDesc =
+    row.description?.trim() ||
+    (typeof extra.shortDescription === 'string' ? extra.shortDescription.trim() : '') ||
+    plainTextSummary;
+
+  const longDesc =
+    Array.isArray(extra.longDescription) && extra.longDescription.length > 0
+      ? extra.longDescription
+      : parsedDesc
+        ? parsedDesc.split('\n\n').filter(Boolean)
+        : [parsedDesc || ''];
+
   return {
     id: row.id,
     slug: row.slug || row.id,
@@ -58,10 +75,8 @@ export function toAppProperty(row: any): Property {
       : row.cover_image
         ? [row.cover_image]
         : [],
-    shortDescription: row.description || '',
-    longDescription: Array.isArray(extra.longDescription)
-      ? extra.longDescription
-      : [row.description || ''],
+    shortDescription: parsedDesc,
+    longDescription: longDesc,
     specifications: extra.specifications || {
       bedrooms: row.bedrooms || 3,
       bathrooms: extra.bathrooms || 3,
@@ -88,6 +103,8 @@ export function toSupabaseRow(p: Property): any {
     area: p.area,
     city: p.city,
     priceInr: p.priceInr,
+    shortDescription: p.shortDescription,
+    longDescription: p.longDescription,
     hasOffer: p.hasOffer,
     offerPriceInr: p.offerPriceInr,
     offerBadgeText: p.offerBadgeText,
@@ -96,7 +113,6 @@ export function toSupabaseRow(p: Property): any {
     customTypeLabel: p.customTypeLabel,
     customAmenities: p.customAmenities,
     displayOrder: p.displayOrder,
-    longDescription: p.longDescription,
     specifications: p.specifications,
     whyBuyPoints: p.whyBuyPoints,
     callNumber: p.callNumber,
@@ -118,6 +134,11 @@ export function toSupabaseRow(p: Property): any {
         ? 'Draft'
         : (p.badgeTag === 'New Launch' ? 'New Launch' : (p.badgeTag === 'Fast Selling' ? 'Fast Selling' : 'Available'));
 
+  const verbatimDesc =
+    p.shortDescription?.trim() ||
+    (Array.isArray(p.longDescription) && p.longDescription.length > 0 ? p.longDescription.join('\n\n') : '') ||
+    `${p.title} in ${p.area || 'Tamil Nadu'} curated by V.V Properties.`;
+
   return {
     id: p.id,
     title: p.title,
@@ -134,7 +155,7 @@ export function toSupabaseRow(p: Property): any {
     cover_image: p.coverImage || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=80',
     gallery: p.galleryImages || [],
     amenities: p.amenities || [],
-    description: p.shortDescription || `${p.title} curated by V.V Properties.`,
+    description: verbatimDesc,
     ai_generated_summary: JSON.stringify(extra),
     is_featured: p.badgeTag === 'Featured',
     updated_at: new Date().toISOString(),
