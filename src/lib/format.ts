@@ -66,8 +66,8 @@ export function getWhatsAppUrl(
     ''
   );
   const message = propertyTitle
-    ? `Hi, I'm interested in ${propertyTitle} listed with VV Properties.`
-    : `Hi VV Properties team, I would like to schedule a property consultation.`;
+    ? `Hi, I'm interested in ${propertyTitle} listed with V.V Properties.`
+    : `Hi V.V Properties team, I would like to enquire about your properties.`;
   return `https://wa.me/${raw}?text=${encodeURIComponent(message)}`;
 }
 

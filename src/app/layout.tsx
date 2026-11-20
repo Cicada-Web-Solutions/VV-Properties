@@ -24,11 +24,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'VV Properties | Luxury Real Estate & Private Property Advisory',
-    template: '%s | VV Properties',
+    default: 'V.V Properties | Residential & Commercial Real Estate in Coimbatore',
+    template: '%s | V.V Properties',
   },
   description:
-    'Discover curated luxury villas, sky penthouses, and investment-grade estates in India with trust, transparency, and dedicated international buyer advisory.',
+    'V.V Properties is a trusted real estate company in Gandhinagar, Saibaba Colony, Coimbatore specializing in residential and commercial property sales, land and plot transactions, investment guidance, and real estate consultation.',
   icons: {
     icon: '/assets/branding/favicon.png',
     shortcut: '/assets/branding/favicon.png',

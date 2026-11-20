@@ -5,8 +5,13 @@ import Link from 'next/link';
 import {
   ArrowRight,
   Building2,
+  Clock,
   Handshake,
+  Mail,
+  MapPin,
+  Phone,
   ShieldCheck,
+  Star,
 } from 'lucide-react';
 import { AccentHeadline } from '@/components/ui/AccentHeadline';
 import { IdbImage } from '@/components/ui/IdbImage';
@@ -34,7 +39,7 @@ export function AboutSection() {
             <div className="relative overflow-hidden rounded-tr-[110px] rounded-tl-2xl rounded-br-2xl rounded-bl-2xl border border-[#0D0221]/10 bg-[#CDE6F5]/30 shadow-sm">
               <IdbImage
                 src={ASSETS.about.company}
-                alt="VV Properties architectural showcase facade"
+                alt="V.V Properties architectural showcase facade"
                 loading="lazy"
                 className="aspect-[4/4.2] w-full object-cover"
               />
@@ -57,7 +62,16 @@ export function AboutSection() {
 
             <div className="mt-5 space-y-3.5 text-sm leading-relaxed text-[#0D0221]/75 sm:text-[15px]">
               {SITE_CONFIG.about.storyParagraphs.map((para, idx) => (
-                <p key={idx}>{para}</p>
+                <p
+                  key={idx}
+                  className={
+                    idx === SITE_CONFIG.about.storyParagraphs.length - 1
+                      ? 'font-medium text-[#0D0221]'
+                      : undefined
+                  }
+                >
+                  {para}
+                </p>
               ))}
             </div>
 
@@ -85,7 +99,7 @@ export function AboutSection() {
             <div className="overflow-hidden rounded-2xl border border-[#0D0221]/10 bg-white shadow-sm">
               <IdbImage
                 src={ASSETS.about.interior}
-                alt="Curated luxury interior residence represented by VV Properties"
+                alt="Curated luxury interior residence represented by V.V Properties"
                 loading="lazy"
                 className="aspect-square w-full object-cover"
               />
@@ -105,7 +119,7 @@ export function AboutSection() {
           </div>
         </div>
 
-        {/* Mission, Vision, Values + Advisory Team Cards (Wireframe Block 5) */}
+        {/* Mission, Vision, Values + Business Information Card */}
         <div
           data-reveal
           className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
@@ -130,22 +144,49 @@ export function AboutSection() {
             </div>
           ))}
 
-          {/* Leadership / Regulatory Placeholder Card */}
+          {/* Official V.V Properties Business Information Card */}
           <div className="flex flex-col justify-between rounded-2xl border border-[#0D0221]/12 bg-[#CDE6F5]/25 p-6">
             <div>
               <span className="inline-block rounded-full bg-[#0D0221] px-3 py-1 text-[11px] font-semibold tracking-[0.14em] text-white uppercase">
-                Advisory Desk
+                {SITE_CONFIG.about.businessCard.badge}
               </span>
               <h3 className="mt-4 font-display text-2xl font-medium text-[#0D0221]">
-                {SITE_CONFIG.about.leadershipNote.title}
+                {SITE_CONFIG.about.businessCard.title}
               </h3>
-              <p className="mt-2.5 text-sm leading-relaxed text-[#0D0221]/75">
-                {SITE_CONFIG.about.leadershipNote.description}
-              </p>
+              <ul className="mt-3 space-y-2.5 text-xs leading-relaxed text-[#0D0221]/80">
+                <li className="flex items-start gap-2">
+                  <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4062BB]" />
+                  <span>{SITE_CONFIG.contact.fullAddress}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4062BB]" />
+                  <a
+                    href={SITE_CONFIG.contact.phoneHref}
+                    className="font-medium text-[#4062BB] hover:underline"
+                  >
+                    {SITE_CONFIG.contact.phoneDisplay} (
+                    {SITE_CONFIG.contact.primaryContactName})
+                  </a>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4062BB]" />
+                  <a
+                    href={`mailto:${SITE_CONFIG.contact.email}`}
+                    className="break-all text-[#4062BB] hover:underline"
+                  >
+                    {SITE_CONFIG.contact.email}
+                  </a>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4062BB]" />
+                  <span>{SITE_CONFIG.contact.workingHours}</span>
+                </li>
+              </ul>
             </div>
-            <p className="mt-4 border-t border-[#0D0221]/10 pt-3 text-[11px] font-medium text-[#4062BB]">
-              {SITE_CONFIG.about.leadershipNote.registrationLabel}
-            </p>
+            <div className="mt-4 flex items-center gap-1.5 border-t border-[#0D0221]/10 pt-3 text-xs font-medium text-[#0D0221]">
+              <Star className="h-3.5 w-3.5 fill-[#4062BB] text-[#4062BB]" />
+              <span>{SITE_CONFIG.contact.rating.label}</span>
+            </div>
           </div>
         </div>
       </div>

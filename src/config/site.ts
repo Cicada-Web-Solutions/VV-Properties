@@ -1,43 +1,51 @@
 /**
- * Centralized brand settings, navigation, and clearly marked replaceable sample content.
- * Replace placeholder values here before connecting your live agency details and backend.
+ * Centralized brand settings, navigation, and official V.V Properties business information.
  */
 export const SITE_CONFIG = {
-  brandName: 'VV Properties',
-  shortWordmark: 'VV PROPERTIES',
-  tagline: 'Curated Luxury Residences & Strategic Real Estate Advisory',
+  brandName: 'V.V Properties',
+  shortWordmark: 'V.V PROPERTIES',
+  tagline: 'Building Trust. Creating Value. Finding the Right Property for You.',
   currency: {
     code: 'INR',
     symbol: '₹',
   },
   contact: {
-    /** Replaceable sample contact details */
-    phoneDisplay: '+91 98000 00000',
-    phoneHref: 'tel:+919800000000',
-    whatsappNumber: '919800000000',
-    email: 'advisory@vvproperties-sample.example',
-    addressLine1: 'Sample Advisory Suite 402, Meridian Tower',
-    addressLine2: 'Financial District, Bengaluru 560001 (Sample Address)',
-    workingHours: 'Monday – Saturday: 9:30 AM – 6:30 PM IST (Sample Hours)',
+    primaryContactName: 'Victor Paul',
+    phoneDisplay: '+91 99948 89221',
+    phoneShort: '9994889221',
+    phoneHref: 'tel:+919994889221',
+    whatsappNumber: '919994889221',
+    whatsappUrl: 'https://wa.me/919994889221',
+    email: 'vvpropertiespealty@gmail.com',
+    addressLine1: 'Gandhinagar, Saibaba Colony',
+    addressLine2: 'Coimbatore, Tamil Nadu 641043, India',
+    fullAddress:
+      'Gandhinagar, Saibaba Colony, Coimbatore, Tamil Nadu 641043, India',
+    workingHours: 'Monday – Sunday: 9:00 AM – 9:00 PM',
+    rating: {
+      score: '5/5',
+      reviewCount: 8,
+      label: '5/5 (8 reviews)',
+    },
     mapCoordinates: {
-      lat: 12.9716,
-      lng: 77.5946,
-      label: 'VV Properties Sample Advisory Office',
-      googleMapsUrl: 'https://maps.google.com/?q=12.9716,77.5946',
+      lat: 11.0282,
+      lng: 76.9465,
+      label: 'Gandhinagar, Saibaba Colony, Coimbatore',
+      embedUrl:
+        'https://maps.google.com/maps?q=Gandhinagar,+Saibaba+Colony,+Coimbatore,+Tamil+Nadu+641043,+India&z=15&output=embed',
+      googleMapsUrl:
+        'https://www.google.com/maps/dir/?api=1&destination=Gandhinagar,+Saibaba+Colony,+Coimbatore,+Tamil+Nadu+641043,+India',
     },
   },
   social: {
-    instagram: 'https://instagram.com',
-    linkedin: 'https://linkedin.com',
-    youtube: 'https://youtube.com',
+    youtube: 'https://youtube.com/@v.vproperties',
   },
   whoWeAre: {
     eyebrow: 'WHO WE ARE',
     headline: 'Trusted Real Estate Guidance for Discerning Buyers.',
     accentWord: 'Discerning',
-    /** 60-90 word editorial intro — replaceable sample copy */
     intro:
-      'VV Properties is a boutique real estate advisory focused on architecturally distinct residences, waterfront estates, and prime land parcels for domestic and international buyers. Every property in our portfolio undergoes thorough title review, transparent valuation, and private inspection so overseas investors and families can acquire landmark spaces with clarity, discretion, and long-term confidence.',
+      'V.V Properties is a trusted real estate company committed to helping clients buy, sell, and invest in properties with confidence. We specialize in residential and commercial real estate, offering transparent services, expert guidance, and personalized support. With deep market knowledge, we assist individuals, families, and investors in finding properties that match their needs, budget, and future goals.',
     /** Clearly replaceable sample figures for the scroll count-up showcase */
     sampleStats: [
       { value: 12, suffix: '+', label: 'Years Advisory Focus (Sample)' },
@@ -47,53 +55,51 @@ export const SITE_CONFIG = {
     ],
   },
   about: {
-    eyebrow: 'ABOUT VV PROPERTIES',
-    headline: 'Building Dreams, Creating Value.',
+    eyebrow: 'ABOUT V.V PROPERTIES',
+    headline: 'Building Trust. Creating Value.',
     accentWord: 'Value.',
     storyParagraphs: [
-      'Founded to elevate how discerning homeowners and overseas investors navigate prime Indian real estate, VV Properties pairs architectural taste with disciplined legal and commercial diligence. Rather than listing thousands of unvetted units, our curators select residences distinguished by light, proportion, neighborhood resilience, and generational appreciation.',
-      'From initial shortlisting and virtual private walk-throughs for international buyers to final documentation and handover coordination, our dedicated advisors remain a single, accountable point of contact at every milestone.',
+      'V.V Properties is a trusted real estate company committed to helping clients buy, sell, and invest in properties with confidence. We specialize in residential and commercial real estate, offering transparent services, expert guidance, and personalized support. With deep market knowledge, we assist individuals, families, and investors in finding properties that match their needs, budget, and future goals.',
+      'Our services include residential and commercial property sales, land and plot transactions, investment guidance, and real estate consultation. At V.V Properties, we focus on integrity, reliability, and customer satisfaction, ensuring a smooth and hassle-free property journey.',
+      'Building Trust. Creating Value. Finding the Right Property for You.',
     ],
     pillars: [
       {
-        title: 'Premium Properties',
-        description: 'Architecturally vetted villas, penthouses, and prime land.',
+        title: 'Residential & Commercial',
+        description: 'Property sales tailored to your needs and budget.',
       },
       {
-        title: 'Trusted Transactions',
-        description: 'Clear title diligence and transparent INR valuations.',
+        title: 'Land & Plots',
+        description: 'Transparent land and plot transactions.',
       },
       {
-        title: 'Dedicated Support',
-        description: 'End-to-end advisory for local & overseas clients.',
+        title: 'Investment Guidance',
+        description: 'Expert real estate consultation and support.',
       },
     ],
     missionVisionValues: [
       {
         label: 'Mission',
-        title: 'Clarity in Every Acquisition',
+        title: 'Invest with Confidence',
         description:
-          'To represent exceptional residential and commercial assets with uncompromising transparency, verified documentation, and bespoke advisory tailored to each buyer.',
+          'To offer transparent services, expert guidance, and personalized support across residential and commercial property sales, land and plot transactions, and real estate consultation.',
       },
       {
         label: 'Vision',
-        title: 'International Benchmark',
+        title: 'Finding the Right Property',
         description:
-          'To stand as the most trusted boutique property bridge connecting global diaspora and institutional private buyers with enduring architectural real estate.',
+          'To assist individuals, families, and investors with deep market knowledge in finding properties that match their needs, budget, and future goals.',
       },
       {
         label: 'Values',
-        title: 'Discretion, Rigor & Craft',
+        title: 'Integrity & Reliability',
         description:
-          'We value long-term client stewardship over transaction volume—grounded in verified facts, honest counsel, and architectural excellence.',
+          'At V.V Properties, we focus on integrity, reliability, and customer satisfaction, ensuring a smooth and hassle-free property journey.',
       },
     ],
-    leadershipNote: {
-      role: 'Principal Advisory Practice (Sample Profile)',
-      title: 'Private Portfolio & Cross-Border Desk',
-      description:
-        'Our leadership team brings together residential brokerage, NRI acquisition coordination, and architectural assessment. Replace this sample profile with actual partner biographies, credentials, and regulatory registration details before launch.',
-      registrationLabel: 'Regulatory Credentials: Placeholder — Add RERA / Agency Licence IDs Here',
+    businessCard: {
+      badge: 'V.V Properties',
+      title: 'Coimbatore Office',
     },
   },
 } as const;

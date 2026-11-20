@@ -1,20 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React from 'react';
 import { usePathname } from 'next/navigation';
-import { MessageCircle, Phone, Send, X } from 'lucide-react';
 import { SITE_CONFIG } from '@/config/site';
-import { getWhatsAppUrl } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 /**
- * Minimal, understated concierge quick-action trigger.
+ * Floating WhatsApp quick-chat button.
  * Hidden on /admin and elevated cleanly on mobile detail pages so it never overlaps sticky CTAs.
  */
 export function FloatingConcierge() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
 
   if (pathname?.startsWith('/admin')) return null;
 
@@ -27,61 +23,22 @@ export function FloatingConcierge() {
         isPropertyDetail ? 'bottom-20 md:bottom-6' : 'bottom-5 sm:bottom-6'
       )}
     >
-      {open && (
-        <div className="mb-3 w-64 rounded-xl border border-[#0D0221]/12 bg-white p-3.5 shadow-xl">
-          <div className="flex items-center justify-between border-b border-[#0D0221]/10 pb-2">
-            <span className="text-xs font-semibold tracking-wider text-[#0D0221] uppercase">
-              Private Concierge
-            </span>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="rounded p-1 text-[#0D0221]/50 hover:bg-[#CDE6F5]/40 hover:text-[#0D0221]"
-              aria-label="Close concierge options"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-          <div className="mt-2.5 flex flex-col gap-1.5">
-            <a
-              href={SITE_CONFIG.contact.phoneHref}
-              className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-[#0D0221] transition-colors hover:bg-[#CDE6F5]/40"
-            >
-              <Phone className="h-4 w-4 text-[#4062BB]" />
-              <span>Call Advisory Desk</span>
-            </a>
-            <a
-              href={getWhatsAppUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-[#0D0221] transition-colors hover:bg-[#CDE6F5]/40"
-            >
-              <MessageCircle className="h-4 w-4 text-[#49A078]" />
-              <span>WhatsApp Advisor</span>
-            </a>
-            <Link
-              href="/#contact"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 rounded-lg bg-[#4062BB] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0D0221]"
-            >
-              <Send className="h-3.5 w-3.5" />
-              <span>Request Callback</span>
-            </Link>
-          </div>
-        </div>
-      )}
-
-      <button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        className="inline-flex items-center gap-2 rounded-full border border-[#0D0221]/15 bg-[#0D0221] px-4 py-2.5 text-xs font-medium tracking-wide text-white shadow-lg transition-all hover:bg-[#4062BB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4062BB]"
-        aria-expanded={open}
-        aria-label="Open private property concierge menu"
+      <a
+        href={SITE_CONFIG.contact.whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with V.V Properties on WhatsApp"
+        className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_8px_24px_rgba(37,211,102,0.38)] transition-all duration-200 hover:scale-105 hover:bg-[#1EBE5D] hover:shadow-[0_10px_28px_rgba(37,211,102,0.48)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
       >
-        <MessageCircle className="h-4 w-4 text-[#CDE6F5]" />
-        <span className="hidden sm:inline">Private Concierge</span>
-        <span className="sm:hidden">Concierge</span>
-      </button>
+        <svg
+          viewBox="0 0 32 32"
+          fill="currentColor"
+          className="h-7 w-7"
+          aria-hidden="true"
+        >
+          <path d="M16.004 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.256.588 4.458 1.706 6.398L3.1 28.9l6.678-1.752a12.74 12.74 0 0 0 6.226 1.616h.006c7.058 0 12.8-5.742 12.8-12.8 0-3.42-1.332-6.634-3.752-9.052A12.716 12.716 0 0 0 16.004 3.2zm0 23.384h-.004a10.58 10.58 0 0 1-5.394-1.478l-.386-.23-3.964 1.04 1.058-3.864-.252-.4a10.553 10.553 0 0 1-1.622-5.652c0-5.844 4.756-10.6 10.606-10.6 2.832 0 5.492 1.104 7.494 3.108a10.526 10.526 0 0 1 3.102 7.496c0 5.846-4.756 10.58-10.638 10.58zm5.814-7.926c-.318-.16-1.884-.93-2.176-1.036-.292-.106-.504-.16-.716.16-.212.318-.822 1.036-1.008 1.248-.186.212-.372.238-.69.08-.318-.16-1.344-.496-2.56-1.58-.946-.844-1.586-1.886-1.772-2.204-.186-.318-.02-.49.14-.648.144-.142.318-.372.478-.558.16-.186.212-.318.318-.53.106-.212.054-.398-.026-.558-.08-.16-.716-1.726-.982-2.362-.258-.62-.52-.536-.716-.546-.186-.01-.398-.012-.61-.012s-.558.08-.85.398c-.292.318-1.114 1.088-1.114 2.654s1.14 3.078 1.3 3.29c.16.212 2.244 3.428 5.438 4.806.76.328 1.352.524 1.814.67.762.242 1.456.208 2.004.126.612-.092 1.884-.77 2.15-1.514.266-.744.266-1.382.186-1.514-.08-.132-.292-.212-.61-.372z" />
+        </svg>
+      </a>
     </div>
   );
 }

@@ -187,12 +187,6 @@ export function HeroCarousel() {
                 <span>{activeSlide.ctaText}</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link
-                href="/#contact"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-5 py-3.5 text-sm font-medium text-white backdrop-blur-[2px] transition-colors hover:bg-white hover:text-[#0D0221]"
-              >
-                <span>Private Advisory</span>
-              </Link>
             </div>
           )}
         </div>

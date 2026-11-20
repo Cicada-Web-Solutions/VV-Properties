@@ -10,6 +10,7 @@ import {
   MapPin,
   Phone,
   Send,
+  Star,
 } from 'lucide-react';
 import { AccentHeadline } from '@/components/ui/AccentHeadline';
 import { SITE_CONFIG } from '@/config/site';
@@ -104,7 +105,7 @@ export function ContactSection() {
       setMessage('');
       setErrors({});
       notify(
-        'Enquiry recorded in prototype',
+        'Enquiry recorded',
         'success',
         'Visible immediately in Admin Dashboard -> Enquiries.'
       );
@@ -122,22 +123,22 @@ export function ContactSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div data-reveal className="max-w-2xl">
           <div className="inline-flex items-center gap-3 text-[11px] font-semibold tracking-[0.2em] text-[#0D0221]/65 uppercase">
-            <span>PRIVATE CONSULTATION</span>
+            <span>CONTACT V.V PROPERTIES</span>
             <span className="h-px w-10 bg-[#0D0221]/20" aria-hidden="true" />
           </div>
           <AccentHeadline
             as="h2"
-            text="Begin a Conversation with Our Advisory Team."
+            text="Begin a Conversation with V.V Properties."
             accentWord="Conversation"
             className="mt-3 font-display text-3xl leading-[1.12] font-medium text-[#0D0221] sm:text-4xl lg:text-[44px]"
           />
           <p className="mt-3 text-base text-[#0D0221]/72">
-            Request private architectural dossiers, schedule virtual walk-throughs,
-            or arrange an in-person inspection.
+            Connect with our team for residential and commercial property sales,
+            land and plot transactions, investment guidance, and consultation.
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
+        <div className="mt-12 grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
           {/* Contact Enquiry Form */}
           <div
             data-reveal
@@ -152,8 +153,8 @@ export function ContactSection() {
                   Thank You for Your Enquiry
                 </h3>
                 <p className="mt-2.5 max-w-md text-sm leading-relaxed text-[#0D0221]/75">
-                  Your enquiry has been saved to this prototype&rsquo;s local
-                  advisory inbox. You can inspect it immediately under{' '}
+                  Your enquiry has been received by V.V Properties and saved
+                  under{' '}
                   <strong className="font-semibold text-[#0D0221]">
                     Admin &rarr; Enquiries
                   </strong>
@@ -168,9 +169,13 @@ export function ContactSection() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} noValidate className="space-y-5">
+              <form
+                onSubmit={handleSubmit}
+                noValidate
+                className="flex flex-col gap-5"
+              >
                 {/* Honeypot anti-spam field */}
-                <div className="hidden" aria-hidden="true">
+                <div hidden className="hidden" aria-hidden="true">
                   <label htmlFor="vv-company-url">Leave empty</label>
                   <input
                     id="vv-company-url"
@@ -233,7 +238,7 @@ export function ContactSection() {
                         if (errors.phone)
                           setErrors((prev) => ({ ...prev, phone: undefined }));
                       }}
-                      placeholder="+91 98000 00000"
+                      placeholder="+91 99948 89221"
                       className={cn(
                         'mt-2 w-full rounded-lg border bg-white px-4 py-3 text-sm text-[#0D0221] placeholder:text-[#0D0221]/40 focus:outline-none focus:ring-2',
                         errors.phone
@@ -318,20 +323,20 @@ export function ContactSection() {
                     rows={4}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Share preferred viewing dates, time zone, or investment criteria..."
+                    placeholder="Share preferred viewing dates, property requirements, or investment criteria..."
                     className="mt-2 w-full rounded-lg border border-[#0D0221]/15 bg-white px-4 py-3 text-sm text-[#0D0221] placeholder:text-[#0D0221]/40 focus:border-[#4062BB] focus:outline-none focus:ring-2 focus:ring-[#4062BB]/25"
                   />
                 </div>
 
                 <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs text-[#0D0221]/55">
-                    Frontend prototype form — submissions save locally to Admin
-                    Enquiries.
+                    We respond promptly during business hours (Mon – Sun, 9:00 AM
+                    – 9:00 PM).
                   </p>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#4062BB] px-6 py-3.5 text-sm font-medium text-white transition-all hover:bg-[#0D0221] disabled:opacity-60"
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#4062BB] px-6 py-3.5 text-sm font-medium text-white transition-all hover:bg-[#0D0221] disabled:opacity-60"
                   >
                     <Send className="h-4 w-4" />
                     <span>{submitting ? 'Submitting...' : 'Submit Enquiry'}</span>
@@ -341,19 +346,21 @@ export function ContactSection() {
             )}
           </div>
 
-          {/* Right Column: Interactive Location Card + Contact Details */}
+          {/* Right Column: Google Maps Location Card + Business Contact Details */}
           <div data-reveal className="flex flex-col gap-6 lg:col-span-5">
-            {/* Map Embed Card */}
+            {/* Google Maps Embed Card */}
             <div className="overflow-hidden rounded-2xl border border-[#0D0221]/10 bg-white shadow-sm">
               <div className="relative h-56 w-full bg-[#CDE6F5]/40">
                 <iframe
-                  title="VV Properties Sample Location Map"
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=77.5746%2C12.9566%2C77.6146%2C12.9866&layer=mapnik"
+                  title="V.V Properties — Gandhinagar, Saibaba Colony, Coimbatore"
+                  src={SITE_CONFIG.contact.mapCoordinates.embedUrl}
                   className="h-full w-full border-0"
                   loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
                 />
               </div>
-              <div className="flex items-center justify-between border-t border-[#0D0221]/10 px-5 py-3 text-xs">
+              <div className="flex items-center justify-between gap-3 border-t border-[#0D0221]/10 px-5 py-3 text-xs">
                 <span className="font-medium text-[#0D0221]/75">
                   {SITE_CONFIG.contact.mapCoordinates.label}
                 </span>
@@ -361,9 +368,9 @@ export function ContactSection() {
                   href={SITE_CONFIG.contact.mapCoordinates.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-medium text-[#4062BB] hover:underline"
+                  className="inline-flex shrink-0 items-center gap-1 font-medium text-[#4062BB] hover:underline"
                 >
-                  <span>Open Maps</span>
+                  <span>Get Directions</span>
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </div>
@@ -371,16 +378,22 @@ export function ContactSection() {
 
             {/* Contact Info Box */}
             <div className="rounded-2xl border border-[#0D0221]/10 bg-white p-6 shadow-sm">
-              <h3 className="font-display text-2xl font-medium text-[#0D0221]">
-                Direct Advisory Contact
-              </h3>
-              <ul className="mt-5 space-y-4 text-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="font-display text-2xl font-medium text-[#0D0221]">
+                  Direct Contact
+                </h3>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#CDE6F5]/45 px-3 py-1 text-xs font-medium text-[#0D0221]">
+                  <Star className="h-3.5 w-3.5 fill-[#4062BB] text-[#4062BB]" />
+                  <span>{SITE_CONFIG.contact.rating.label}</span>
+                </span>
+              </div>
+              <ul className="mt-5 space-y-3.5 text-sm">
                 <li className="flex items-start gap-3 text-[#0D0221]/80">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#4062BB]" />
                   <div>
                     <p className="font-medium text-[#0D0221]">Office Address</p>
                     <p className="mt-0.5 text-[#0D0221]/70">
-                      {SITE_CONFIG.contact.addressLine1}
+                      {SITE_CONFIG.contact.addressLine1},
                       <br />
                       {SITE_CONFIG.contact.addressLine2}
                     </p>
@@ -389,7 +402,9 @@ export function ContactSection() {
                 <li className="flex items-start gap-3">
                   <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#4062BB]" />
                   <div>
-                    <p className="font-medium text-[#0D0221]">Telephone</p>
+                    <p className="font-medium text-[#0D0221]">
+                      Primary Contact ({SITE_CONFIG.contact.primaryContactName})
+                    </p>
                     <a
                       href={SITE_CONFIG.contact.phoneHref}
                       className="mt-0.5 inline-block text-[#4062BB] hover:underline"
@@ -413,7 +428,7 @@ export function ContactSection() {
                 <li className="flex items-start gap-3 text-[#0D0221]/80">
                   <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#4062BB]" />
                   <div>
-                    <p className="font-medium text-[#0D0221]">Working Hours</p>
+                    <p className="font-medium text-[#0D0221]">Business Hours</p>
                     <p className="mt-0.5 text-[#0D0221]/70">
                       {SITE_CONFIG.contact.workingHours}
                     </p>

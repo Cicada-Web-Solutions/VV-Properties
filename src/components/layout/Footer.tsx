@@ -3,7 +3,7 @@
 import React, { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Lock, Mail, MapPin, Phone, X } from 'lucide-react';
+import { Clock, Lock, Mail, MapPin, Phone, Star, X } from 'lucide-react';
 import { BrandLogo } from '@/components/layout/BrandLogo';
 import { SITE_CONFIG } from '@/config/site';
 
@@ -32,18 +32,22 @@ export function Footer() {
               <Link href="/" className="inline-block">
                 <BrandLogo tone="light" />
               </Link>
-              <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">
-                {SITE_CONFIG.tagline}. Serving discerning local and overseas
-                property buyers with clarity and transparency.
+              <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/75">
+                {SITE_CONFIG.tagline}
               </p>
-              <p className="mt-4 text-xs text-[#CDE6F5]/75">
-                All listings and figures shown in this showcase use replaceable
-                sample data.
+              <p className="mt-3 max-w-sm text-xs leading-relaxed text-white/60">
+                Trusted residential and commercial real estate sales, land and
+                plot transactions, investment guidance, and consultation in
+                Coimbatore.
               </p>
+              <div className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-[#CDE6F5]">
+                <Star className="h-3.5 w-3.5 fill-[#CDE6F5] text-[#CDE6F5]" />
+                <span>{SITE_CONFIG.contact.rating.label}</span>
+              </div>
             </div>
 
             {/* Column 2: Quick Links */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-2">
               <h3 className="text-xs font-semibold tracking-[0.16em] text-[#CDE6F5] uppercase">
                 Quick Links
               </h3>
@@ -97,9 +101,9 @@ export function Footer() {
             </div>
 
             {/* Column 3: Contact */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-4">
               <h3 className="text-xs font-semibold tracking-[0.16em] text-[#CDE6F5] uppercase">
-                Advisory Desk
+                Contact Us
               </h3>
               <ul className="mt-4 space-y-3 text-sm text-white/75">
                 <li>
@@ -107,8 +111,11 @@ export function Footer() {
                     href={SITE_CONFIG.contact.phoneHref}
                     className="inline-flex items-center gap-2.5 transition-colors hover:text-white"
                   >
-                    <Phone className="h-4 w-4 text-[#CDE6F5]" />
-                    <span>{SITE_CONFIG.contact.phoneDisplay}</span>
+                    <Phone className="h-4 w-4 shrink-0 text-[#CDE6F5]" />
+                    <span>
+                      {SITE_CONFIG.contact.phoneDisplay} (
+                      {SITE_CONFIG.contact.primaryContactName})
+                    </span>
                   </a>
                 </li>
                 <li>
@@ -120,12 +127,13 @@ export function Footer() {
                     <span>{SITE_CONFIG.contact.email}</span>
                   </a>
                 </li>
-                <li className="flex items-start gap-2.5 text-white/65">
+                <li className="flex items-start gap-2.5 text-white/70">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#CDE6F5]" />
-                  <span>
-                    {SITE_CONFIG.contact.addressLine1},{' '}
-                    {SITE_CONFIG.contact.addressLine2}
-                  </span>
+                  <span>{SITE_CONFIG.contact.fullAddress}</span>
+                </li>
+                <li className="flex items-start gap-2.5 text-white/70">
+                  <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#CDE6F5]" />
+                  <span>{SITE_CONFIG.contact.workingHours}</span>
                 </li>
               </ul>
             </div>
@@ -135,57 +143,13 @@ export function Footer() {
               <h3 className="text-xs font-semibold tracking-[0.16em] text-[#CDE6F5] uppercase">
                 Follow Us
               </h3>
-              <div className="mt-4 flex items-center gap-3">
-                <a
-                  href={SITE_CONFIG.social.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="VV Properties Instagram"
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 text-white/80 transition-colors hover:border-[#CDE6F5] hover:bg-white/10 hover:text-white"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-4 w-4"
-                    aria-hidden="true"
-                  >
-                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                  </svg>
-                </a>
-                <a
-                  href={SITE_CONFIG.social.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="VV Properties LinkedIn"
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 text-white/80 transition-colors hover:border-[#CDE6F5] hover:bg-white/10 hover:text-white"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-4 w-4"
-                    aria-hidden="true"
-                  >
-                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                    <rect width="4" height="12" x="2" y="9" />
-                    <circle cx="4" cy="4" r="2" />
-                  </svg>
-                </a>
+              <div className="mt-4 flex flex-col items-start gap-3">
                 <a
                   href={SITE_CONFIG.social.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="VV Properties YouTube"
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 text-white/80 transition-colors hover:border-[#CDE6F5] hover:bg-white/10 hover:text-white"
+                  aria-label="V.V Properties YouTube Channel"
+                  className="inline-flex items-center gap-2.5 rounded-lg border border-white/15 px-3.5 py-2.5 text-xs font-medium text-white/85 transition-colors hover:border-[#CDE6F5] hover:bg-white/10 hover:text-white"
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -194,12 +158,13 @@ export function Footer() {
                     strokeWidth="1.8"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="h-4 w-4"
+                    className="h-4 w-4 shrink-0 text-[#CDE6F5]"
                     aria-hidden="true"
                   >
                     <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
                     <path d="m10 15 5-3-5-3v6Z" />
                   </svg>
+                  <span>YouTube</span>
                 </a>
               </div>
 
@@ -252,7 +217,7 @@ export function Footer() {
             <div className="flex items-start justify-between gap-4 border-b border-[#0D0221]/10 pb-4">
               <div>
                 <p className="text-[11px] font-semibold tracking-[0.16em] text-[#4062BB] uppercase">
-                  VV Properties Legal Notice (Sample)
+                  V.V Properties Legal Notice
                 </p>
                 <h2 className="mt-1 font-display text-3xl font-medium">
                   {legalOpen === 'privacy' ? 'Privacy Policy' : 'Terms of Use'}
