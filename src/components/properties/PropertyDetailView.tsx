@@ -89,32 +89,36 @@ export function PropertyDetailView() {
 
   if (!isHydrated && !property) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="h-96 animate-pulse rounded-2xl bg-[#CDE6F5]/30" />
+      <div className="bg-[#FAF6F4] pt-28 pb-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="h-96 animate-pulse rounded-md bg-[#DBCCC6]/40" />
+        </div>
       </div>
     );
   }
 
   if (!property) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-24 text-center sm:px-6">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#CDE6F5]/50 text-[#4062BB]">
-          <Lock className="h-6 w-6" />
+      <div className="bg-[#FAF6F4] pt-32 pb-24">
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-sm border border-[#DBCCC6] bg-white text-[#CE8936]">
+            <Lock className="h-6 w-6" />
+          </div>
+          <h1 className="mt-5 font-display text-4xl font-semibold text-[#491F40]">
+            Property Unavailable
+          </h1>
+          <p className="mt-3 text-base text-[#491F40]/72">
+            This listing could not be found or is currently unpublished in the
+            V.V Properties catalogue.
+          </p>
+          <Link
+            href="/properties"
+            className="mt-7 inline-flex items-center gap-2 rounded-sm bg-gradient-to-br from-[#E0C188] to-[#CE8936] px-6 py-3 text-xs font-semibold tracking-wider text-[#491F40] uppercase transition-all hover:brightness-105"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Properties</span>
+          </Link>
         </div>
-        <h1 className="mt-5 font-display text-4xl font-medium text-[#0D0221]">
-          Property Unavailable
-        </h1>
-        <p className="mt-3 text-base text-[#0D0221]/70">
-          This listing could not be found or is currently unpublished in the VV
-          Properties catalogue.
-        </p>
-        <Link
-          href="/properties"
-          className="mt-7 inline-flex items-center gap-2 rounded-lg bg-[#4062BB] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#0D0221]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back to Properties</span>
-        </Link>
       </div>
     );
   }
@@ -141,40 +145,42 @@ export function PropertyDetailView() {
   const enquireUrl = `/?property=${encodeURIComponent(property.id)}#contact`;
 
   const priceBoxCard = (
-    <div className="rounded-2xl border-2 border-[#0D0221] bg-white p-6 shadow-sm">
+    <div className="rounded-md border border-[#DBCCC6] border-t-4 border-t-[#CE8936] bg-white p-6 shadow-[0_18px_46px_rgba(73,31,64,0.10)]">
       <div className="flex flex-wrap items-center justify-between gap-2">
         {hasOffer && property.offerBadgeText && !isSold ? (
-          <span className="inline-block rounded-full bg-[#0D0221] px-3 py-1 text-[11px] font-semibold tracking-wide text-white">
+          <span className="inline-block rounded-sm bg-gradient-to-r from-[#E0C188] to-[#CE8936] px-3 py-1 text-[10.5px] font-bold tracking-wider text-[#491F40] uppercase">
             {property.offerBadgeText}
           </span>
         ) : (
-          <span className="text-xs font-semibold tracking-wider text-[#0D0221]/60 uppercase">
+          <span className="text-[11px] font-semibold tracking-[0.18em] text-[#9A5F1D] uppercase">
             {property.type} Valuation
           </span>
         )}
         <StatusBadge status={property.availability} />
       </div>
 
-      <p className="mt-4 text-xs font-medium tracking-wider text-[#0D0221]/55 uppercase">
-        {isSold ? 'Archive Reference Price' : 'Starting Price (INR)'}
+      <p className="mt-5 text-[11px] font-semibold tracking-[0.16em] text-[#491F40]/60 uppercase">
+        {isSold ? 'Archive Reference Price' : 'Listing Price (INR)'}
       </p>
 
-      <div className="mt-1 flex flex-wrap items-baseline gap-2.5">
+      <div className="mt-1.5 flex flex-wrap items-baseline gap-2.5">
         <span
           className={cn(
-            'font-display text-3xl font-semibold tracking-tight sm:text-4xl',
-            isSold ? 'text-[#0D0221]/60 line-through' : 'text-[#0D0221]'
+            'font-display text-3xl font-bold tracking-tight sm:text-4xl',
+            isSold
+              ? 'text-[#491F40]/60 line-through decoration-[#D6866B]'
+              : 'text-[#491F40]'
           )}
         >
           {formatINR(effectivePrice)}
         </span>
-        <span className="text-sm font-semibold text-[#4062BB]">
+        <span className="text-sm font-semibold text-[#9A5F1D]">
           ({formatINRCompact(effectivePrice)})
         </span>
       </div>
 
       {hasOffer && !isSold && (
-        <p className="mt-1.5 text-xs text-[#0D0221]/65">
+        <p className="mt-1.5 text-xs text-[#491F40]/65">
           <s>{formatINR(property.priceInr)}</s>
           {property.offerEndDate
             ? ` · Offer valid until ${formatShortDate(property.offerEndDate)}`
@@ -183,32 +189,16 @@ export function PropertyDetailView() {
       )}
 
       {isSold && (
-        <div className="mt-4 rounded-xl border border-[#F06543]/30 bg-[#F06543]/10 p-3 text-xs leading-relaxed text-[#0D0221]/85">
-          This sample property is currently marked <strong>Sold</strong>. Contact
-          our advisory team for comparable off-market opportunities.
+        <div className="mt-4 rounded-sm border border-[#D6866B]/40 bg-[#D6866B]/12 p-3 text-xs leading-relaxed text-[#491F40]/88">
+          This property is currently marked <strong>Sold</strong>. Contact V.V
+          Properties for comparable available opportunities.
         </div>
       )}
 
       <div className="mt-6 flex flex-col gap-2.5">
-        <a
-          href={callHref}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#0D0221] px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-[#4062BB]"
-        >
-          <Phone className="h-4 w-4" />
-          <span>Call our team</span>
-        </a>
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#0D0221]/25 bg-white px-4 py-3 text-sm font-medium text-[#0D0221] transition-colors hover:border-[#49A078] hover:bg-[#49A078]/10"
-        >
-          <MessageCircle className="h-4 w-4 text-[#49A078]" />
-          <span>WhatsApp us</span>
-        </a>
         <Link
           href={enquireUrl}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#4062BB] px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-[#314ea0]"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-gradient-to-br from-[#E0C188] to-[#CE8936] px-4 py-3.5 text-xs font-semibold tracking-wider text-[#491F40] uppercase shadow-sm transition-all hover:brightness-105"
         >
           <Send className="h-4 w-4" />
           <span>
@@ -217,44 +207,63 @@ export function PropertyDetailView() {
               : 'Enquire about this property'}
           </span>
         </Link>
+        <a
+          href={callHref}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-[#491F40] px-4 py-3 text-xs font-semibold tracking-wider text-white uppercase transition-colors hover:bg-[#32132B]"
+        >
+          <Phone className="h-4 w-4 text-[#E0C188]" />
+          <span>Call our team</span>
+        </a>
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] px-4 py-3 text-xs font-semibold tracking-wider text-[#491F40] uppercase transition-colors hover:border-[#25D366] hover:bg-[#25D366]/10"
+        >
+          <MessageCircle className="h-4 w-4 text-[#25D366]" />
+          <span>WhatsApp us</span>
+        </a>
       </div>
     </div>
   );
 
   return (
-    <div className="bg-white pb-24 md:pb-16">
+    <div className="bg-[#FAF6F4] pt-[68px] pb-24 md:pb-16">
       {/* Breadcrumb Bar */}
-      <div className="border-b border-[#0D0221]/8 bg-[#CDE6F5]/15">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-3.5 text-xs text-[#0D0221]/65 sm:px-6 lg:px-8">
-          <Link href="/" className="hover:text-[#4062BB]">
+      <div className="border-b border-[#DBCCC6] bg-white">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-3.5 text-xs text-[#491F40]/65 sm:px-6 lg:px-8">
+          <Link href="/" className="transition-colors hover:text-[#9A5F1D]">
             Home
           </Link>
           <span aria-hidden="true">&rsaquo;</span>
-          <Link href="/properties" className="hover:text-[#4062BB]">
+          <Link
+            href="/properties"
+            className="transition-colors hover:text-[#9A5F1D]"
+          >
             Properties
           </Link>
           <span aria-hidden="true">&rsaquo;</span>
-          <span className="truncate font-medium text-[#0D0221]">
+          <span className="truncate font-semibold text-[#491F40]">
             {property.title}
           </span>
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-        {/* Gallery Grid (Wireframe Block C) */}
+        {/* Architectural Gallery Grid */}
         <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
           <button
             type="button"
             onClick={() => setLightboxIdx(0)}
-            className="group relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-[#0D0221]/10 bg-[#CDE6F5]/20 md:col-span-8 md:aspect-[16/10.5]"
+            className="group relative aspect-[16/10] w-full overflow-hidden rounded-md border border-[#DBCCC6] bg-[#DBCCC6]/35 md:col-span-8 md:aspect-[16/10.5]"
             aria-label={`Open ${property.title} gallery lightbox`}
           >
             <IdbImage
               src={gallery[0]}
               alt={property.title}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
-            <span className="absolute right-4 bottom-4 inline-flex items-center gap-1.5 rounded-full bg-[#0D0221]/80 px-3.5 py-1.5 text-xs font-medium text-white backdrop-blur-xs">
+            <span className="absolute right-4 bottom-4 inline-flex items-center gap-1.5 rounded-sm border border-[#E0C188]/40 bg-[#491F40]/88 px-3.5 py-2 text-xs font-semibold tracking-wide text-[#E0C188] backdrop-blur-xs">
               <Expand className="h-3.5 w-3.5" />
               <span>View Gallery ({gallery.length})</span>
             </span>
@@ -264,30 +273,30 @@ export function PropertyDetailView() {
             <button
               type="button"
               onClick={() => setLightboxIdx(gallery.length > 1 ? 1 : 0)}
-              className="group relative aspect-[16/10] overflow-hidden rounded-2xl border border-[#0D0221]/10 bg-[#CDE6F5]/20 md:aspect-auto"
+              className="group relative aspect-[16/10] overflow-hidden rounded-md border border-[#DBCCC6] bg-[#DBCCC6]/35 md:aspect-auto"
               aria-label="Open gallery image 2"
             >
               <IdbImage
                 src={gallery[1] ?? gallery[0]}
                 alt={`${property.title} secondary view`}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
               />
             </button>
 
             <button
               type="button"
               onClick={() => setLightboxIdx(gallery.length > 2 ? 2 : 0)}
-              className="group relative aspect-[16/10] overflow-hidden rounded-2xl border border-[#0D0221]/10 bg-[#CDE6F5]/20 md:aspect-auto"
+              className="group relative aspect-[16/10] overflow-hidden rounded-md border border-[#DBCCC6] bg-[#DBCCC6]/35 md:aspect-auto"
               aria-label="Open full gallery"
             >
               <IdbImage
                 src={gallery[2] ?? gallery[0]}
                 alt={`${property.title} architectural angle`}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
               />
               {gallery.length > 3 && (
-                <div className="absolute inset-0 flex items-center justify-center bg-[#0D0221]/45 transition-colors group-hover:bg-[#0D0221]/60">
-                  <span className="rounded-full border border-white/40 bg-[#0D0221]/65 px-4 py-1.5 text-xs font-semibold text-white">
+                <div className="absolute inset-0 flex items-center justify-center bg-[#32132B]/55 transition-colors group-hover:bg-[#32132B]/70">
+                  <span className="rounded-sm border border-[#E0C188]/55 bg-[#491F40]/85 px-4 py-1.5 text-xs font-semibold tracking-wide text-[#E0C188]">
                     +{gallery.length - 3} more photos
                   </span>
                 </div>
@@ -296,46 +305,49 @@ export function PropertyDetailView() {
           </div>
         </div>
 
-        {/* Details Body + Sticky Price Box */}
+        {/* Details Body + Sticky Valuation Box */}
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-12">
           {/* Left Main Content */}
           <div className="space-y-10 lg:col-span-8">
             {/* Title Block */}
-            <div className="border-b border-[#0D0221]/10 pb-8">
+            <div className="rounded-md border border-[#DBCCC6] bg-white p-6 shadow-xs sm:p-8">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-md bg-[#CDE6F5]/55 px-3 py-1 text-xs font-semibold tracking-wider text-[#4062BB] uppercase">
+                <span className="rounded-sm bg-[#491F40] px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-[#E0C188] uppercase">
                   {property.type}
                 </span>
                 <StatusBadge status={property.availability} size="md" />
               </div>
 
-              <h1 className="mt-4 font-display text-3xl leading-[1.1] font-medium text-[#0D0221] sm:text-5xl">
+              <h1 className="mt-4 font-display text-3xl leading-[1.1] font-semibold text-[#491F40] sm:text-5xl">
                 {property.title}
               </h1>
 
-              <div className="mt-3 flex items-center gap-2 text-sm font-medium text-[#0D0221]/70">
-                <MapPin className="h-4 w-4 text-[#4062BB]" />
+              <div className="mt-3 flex items-center gap-2 text-sm font-medium text-[#491F40]/72">
+                <MapPin className="h-4 w-4 text-[#CE8936]" />
                 <span>
                   {property.area}, {property.city}
                 </span>
               </div>
 
-              {/* Mobile Price Box below Title per Wireframe spec */}
+              {/* Mobile Price Box below Title */}
               <div className="mt-7 lg:hidden">{priceBoxCard}</div>
             </div>
 
             {/* Key Specifications Grid */}
-            <div>
-              <h2 className="font-display text-2xl font-medium text-[#0D0221]">
+            <div className="rounded-md border border-[#DBCCC6] bg-white p-6 shadow-xs sm:p-8">
+              <p className="text-[11px] font-semibold tracking-[0.22em] text-[#9A5F1D] uppercase">
+                PROPERTY OVERVIEW
+              </p>
+              <h2 className="mt-1 font-display text-3xl font-semibold text-[#491F40]">
                 Specifications
               </h2>
-              <div className="mt-4 grid grid-cols-2 gap-3.5 sm:grid-cols-3">
-                <div className="rounded-xl border border-[#0D0221]/10 bg-[#CDE6F5]/15 p-4">
-                  <p className="text-[11px] font-semibold tracking-wider text-[#0D0221]/55 uppercase">
+              <div className="mt-5 grid grid-cols-2 gap-3.5 sm:grid-cols-3">
+                <div className="rounded-sm border border-[#DBCCC6]/85 bg-[#FAF6F4] p-4">
+                  <p className="text-[10.5px] font-semibold tracking-[0.14em] text-[#491F40]/60 uppercase">
                     Built / Plot Area
                   </p>
-                  <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-[#0D0221]">
-                    <Maximize2 className="h-4 w-4 text-[#4062BB]" />
+                  <p className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-[#491F40]">
+                    <Maximize2 className="h-4 w-4 text-[#CE8936]" />
                     <span>
                       {property.specifications.areaSqFt.toLocaleString('en-IN')}{' '}
                       sq.ft
@@ -344,56 +356,56 @@ export function PropertyDetailView() {
                 </div>
 
                 {typeof property.specifications.bedrooms === 'number' && (
-                  <div className="rounded-xl border border-[#0D0221]/10 bg-[#CDE6F5]/15 p-4">
-                    <p className="text-[11px] font-semibold tracking-wider text-[#0D0221]/55 uppercase">
+                  <div className="rounded-sm border border-[#DBCCC6]/85 bg-[#FAF6F4] p-4">
+                    <p className="text-[10.5px] font-semibold tracking-[0.14em] text-[#491F40]/60 uppercase">
                       Bedrooms
                     </p>
-                    <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-[#0D0221]">
-                      <BedDouble className="h-4 w-4 text-[#4062BB]" />
+                    <p className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-[#491F40]">
+                      <BedDouble className="h-4 w-4 text-[#CE8936]" />
                       <span>{property.specifications.bedrooms} Suites</span>
                     </p>
                   </div>
                 )}
 
                 {typeof property.specifications.bathrooms === 'number' && (
-                  <div className="rounded-xl border border-[#0D0221]/10 bg-[#CDE6F5]/15 p-4">
-                    <p className="text-[11px] font-semibold tracking-wider text-[#0D0221]/55 uppercase">
+                  <div className="rounded-sm border border-[#DBCCC6]/85 bg-[#FAF6F4] p-4">
+                    <p className="text-[10.5px] font-semibold tracking-[0.14em] text-[#491F40]/60 uppercase">
                       Bathrooms
                     </p>
-                    <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-[#0D0221]">
-                      <Bath className="h-4 w-4 text-[#4062BB]" />
+                    <p className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-[#491F40]">
+                      <Bath className="h-4 w-4 text-[#CE8936]" />
                       <span>{property.specifications.bathrooms} Baths</span>
                     </p>
                   </div>
                 )}
 
                 {property.specifications.plotOrFloor && (
-                  <div className="rounded-xl border border-[#0D0221]/10 bg-[#CDE6F5]/15 p-4">
-                    <p className="text-[11px] font-semibold tracking-wider text-[#0D0221]/55 uppercase">
+                  <div className="rounded-sm border border-[#DBCCC6]/85 bg-[#FAF6F4] p-4">
+                    <p className="text-[10.5px] font-semibold tracking-[0.14em] text-[#491F40]/60 uppercase">
                       Configuration
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-[#0D0221]">
+                    <p className="mt-1.5 text-sm font-semibold text-[#491F40]">
                       {property.specifications.plotOrFloor}
                     </p>
                   </div>
                 )}
 
                 {typeof property.specifications.parkingSpaces === 'number' && (
-                  <div className="rounded-xl border border-[#0D0221]/10 bg-[#CDE6F5]/15 p-4">
-                    <p className="text-[11px] font-semibold tracking-wider text-[#0D0221]/55 uppercase">
+                  <div className="rounded-sm border border-[#DBCCC6]/85 bg-[#FAF6F4] p-4">
+                    <p className="text-[10.5px] font-semibold tracking-[0.14em] text-[#491F40]/60 uppercase">
                       Parking
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-[#0D0221]">
+                    <p className="mt-1.5 text-sm font-semibold text-[#491F40]">
                       {property.specifications.parkingSpaces} Covered Bays
                     </p>
                   </div>
                 )}
 
-                <div className="rounded-xl border border-[#0D0221]/10 bg-[#CDE6F5]/15 p-4">
-                  <p className="text-[11px] font-semibold tracking-wider text-[#0D0221]/55 uppercase">
+                <div className="rounded-sm border border-[#DBCCC6]/85 bg-[#FAF6F4] p-4">
+                  <p className="text-[10.5px] font-semibold tracking-[0.14em] text-[#491F40]/60 uppercase">
                     Possession
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-[#0D0221]">
+                  <p className="mt-1.5 text-sm font-semibold text-[#491F40]">
                     {property.specifications.possessionStatus}
                   </p>
                 </div>
@@ -401,11 +413,14 @@ export function PropertyDetailView() {
             </div>
 
             {/* About the Property */}
-            <div>
-              <h2 className="font-display text-2xl font-medium text-[#0D0221]">
+            <div className="rounded-md border border-[#DBCCC6] bg-white p-6 shadow-xs sm:p-8">
+              <p className="text-[11px] font-semibold tracking-[0.22em] text-[#9A5F1D] uppercase">
+                DESCRIPTION
+              </p>
+              <h2 className="mt-1 font-display text-3xl font-semibold text-[#491F40]">
                 About the property
               </h2>
-              <div className="mt-4 space-y-4 text-base leading-relaxed text-[#0D0221]/80">
+              <div className="mt-4 space-y-4 text-base leading-[1.78] text-[#491F40]/80">
                 {property.longDescription.map((paragraph, i) => (
                   <p key={i}>{paragraph}</p>
                 ))}
@@ -416,20 +431,23 @@ export function PropertyDetailView() {
             {(property.amenities.length > 0 ||
               (property.customAmenities &&
                 property.customAmenities.length > 0)) && (
-              <div>
-                <h2 className="font-display text-2xl font-medium text-[#0D0221]">
+              <div className="rounded-md border border-[#DBCCC6] bg-white p-6 shadow-xs sm:p-8">
+                <p className="text-[11px] font-semibold tracking-[0.22em] text-[#9A5F1D] uppercase">
+                  FEATURES &amp; COMFORTS
+                </p>
+                <h2 className="mt-1 font-display text-3xl font-semibold text-[#491F40]">
                   Amenities
                 </h2>
-                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {property.amenities.map((key) => {
                     const Icon = AMENITY_ICONS[key] ?? Sparkles;
                     return (
                       <div
                         key={key}
-                        className="flex flex-col items-center justify-center rounded-xl border border-[#0D0221]/12 bg-white px-3 py-4 text-center"
+                        className="flex flex-col items-center justify-center rounded-sm border border-[#DBCCC6]/85 bg-[#FAF6F4] px-3 py-4 text-center transition-colors hover:border-[#CE8936]"
                       >
-                        <Icon className="h-5 w-5 text-[#4062BB]" />
-                        <span className="mt-2 text-xs font-medium text-[#0D0221]">
+                        <Icon className="h-5 w-5 text-[#CE8936]" />
+                        <span className="mt-2 text-xs font-semibold text-[#491F40]">
                           {getAmenityLabel(key)}
                         </span>
                       </div>
@@ -438,10 +456,10 @@ export function PropertyDetailView() {
                   {(property.customAmenities ?? []).map((label) => (
                     <div
                       key={`custom-${label}`}
-                      className="flex flex-col items-center justify-center rounded-xl border border-[#0D0221]/12 bg-white px-3 py-4 text-center"
+                      className="flex flex-col items-center justify-center rounded-sm border border-[#DBCCC6]/85 bg-[#FAF6F4] px-3 py-4 text-center transition-colors hover:border-[#CE8936]"
                     >
-                      <Sparkles className="h-5 w-5 text-[#4062BB]" />
-                      <span className="mt-2 text-xs font-medium text-[#0D0221]">
+                      <Sparkles className="h-5 w-5 text-[#CE8936]" />
+                      <span className="mt-2 text-xs font-semibold text-[#491F40]">
                         {label}
                       </span>
                     </div>
@@ -452,17 +470,20 @@ export function PropertyDetailView() {
 
             {/* Why Buy This Property */}
             {property.whyBuyPoints.length > 0 && (
-              <div className="rounded-2xl border border-[#0D0221]/10 bg-[#CDE6F5]/20 p-6 sm:p-7">
-                <h2 className="font-display text-2xl font-medium text-[#0D0221]">
+              <div className="rounded-md border border-[#DBCCC6] border-l-4 border-l-[#CE8936] bg-white p-6 shadow-xs sm:p-8">
+                <p className="text-[11px] font-semibold tracking-[0.22em] text-[#9A5F1D] uppercase">
+                  INVESTMENT HIGHLIGHTS
+                </p>
+                <h2 className="mt-1 font-display text-3xl font-semibold text-[#491F40]">
                   Why buy this property
                 </h2>
-                <ul className="mt-4 space-y-3">
+                <ul className="mt-5 space-y-3">
                   {property.whyBuyPoints.map((point, idx) => (
                     <li
                       key={idx}
-                      className="flex items-start gap-3 text-sm leading-relaxed text-[#0D0221]/85 sm:text-[15px]"
+                      className="flex items-start gap-3 text-sm leading-relaxed text-[#491F40]/85 sm:text-[15px]"
                     >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#49A078]" />
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#CE8936]" />
                       <span>{point}</span>
                     </li>
                   ))}
@@ -471,27 +492,27 @@ export function PropertyDetailView() {
             )}
           </div>
 
-          {/* Desktop Sticky Price Box */}
+          {/* Desktop Sticky Valuation & Contact Card */}
           <aside className="hidden lg:col-span-4 lg:block">
-            <div className="sticky top-28">{priceBoxCard}</div>
+            <div className="sticky top-24">{priceBoxCard}</div>
           </aside>
         </div>
 
         {/* Similar Properties */}
         {similarProperties.length > 0 && (
-          <section className="mt-20 border-t border-[#0D0221]/10 pt-14">
+          <section className="mt-20 border-t border-[#DBCCC6] pt-14">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <p className="text-[11px] font-semibold tracking-[0.2em] text-[#4062BB] uppercase">
-                  Curated Alternatives
+                <p className="text-[11px] font-semibold tracking-[0.24em] text-[#9A5F1D] uppercase">
+                  CURATED ALTERNATIVES
                 </p>
-                <h2 className="mt-1.5 font-display text-3xl font-medium text-[#0D0221]">
+                <h2 className="mt-1.5 font-display text-3xl font-semibold text-[#491F40] sm:text-4xl">
                   Similar Properties
                 </h2>
               </div>
               <Link
                 href="/properties"
-                className="text-sm font-medium text-[#4062BB] hover:underline"
+                className="text-sm font-semibold text-[#491F40] transition-colors hover:text-[#CE8936]"
               >
                 View all &rarr;
               </Link>
@@ -505,28 +526,28 @@ export function PropertyDetailView() {
         )}
       </div>
 
-      {/* Fixed Mobile Bottom Action Bar (Wireframe Block C) */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#0D0221]/15 bg-white/95 px-3 py-2.5 shadow-[0_-8px_24px_rgba(13,2,33,0.08)] backdrop-blur-md md:hidden">
+      {/* Fixed Mobile Bottom Action Bar */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#DBCCC6] bg-white/96 px-3 py-2.5 shadow-[0_-8px_24px_rgba(73,31,64,0.12)] backdrop-blur-md md:hidden">
         <div className="mx-auto grid max-w-lg grid-cols-3 gap-2">
           <a
             href={callHref}
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#0D0221] px-2.5 py-2.5 text-xs font-medium text-white"
+            className="inline-flex items-center justify-center gap-1.5 rounded-sm bg-[#491F40] px-2.5 py-2.5 text-xs font-semibold text-white"
           >
-            <Phone className="h-3.5 w-3.5" />
+            <Phone className="h-3.5 w-3.5 text-[#E0C188]" />
             <span>Call</span>
           </a>
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#0D0221]/20 bg-white px-2.5 py-2.5 text-xs font-medium text-[#0D0221]"
+            className="inline-flex items-center justify-center gap-1.5 rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] px-2.5 py-2.5 text-xs font-semibold text-[#491F40]"
           >
-            <MessageCircle className="h-3.5 w-3.5 text-[#49A078]" />
+            <MessageCircle className="h-3.5 w-3.5 text-[#25D366]" />
             <span>WhatsApp</span>
           </a>
           <Link
             href={enquireUrl}
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#4062BB] px-2.5 py-2.5 text-xs font-medium text-white"
+            className="inline-flex items-center justify-center gap-1.5 rounded-sm bg-gradient-to-br from-[#E0C188] to-[#CE8936] px-2.5 py-2.5 text-xs font-semibold text-[#491F40]"
           >
             <Send className="h-3.5 w-3.5" />
             <span>Enquire</span>

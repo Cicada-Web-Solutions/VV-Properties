@@ -351,7 +351,10 @@ export interface TrafficChartComputed {
   rangeSummary: string;
 }
 
-const ANCHOR_END_DATE = new Date(2026, 10, 14); // 2026-11-14 end of traffic.json
+const getAnchorEndDate = () => {
+  const now = new Date();
+  return now.getFullYear() >= 2026 ? now : new Date(2026, 10, 14);
+};
 
 function formatDdMmYy(d: Date, includeYear: boolean): string {
   const dd = String(d.getDate()).padStart(2, '0');
@@ -403,8 +406,8 @@ export function computeTrafficChart(
     };
   }
 
-  let start = new Date(ANCHOR_END_DATE);
-  let end = new Date(ANCHOR_END_DATE);
+  let start = getAnchorEndDate();
+  let end = getAnchorEndDate();
 
   if (range === '1W') start.setDate(end.getDate() - 7);
   else if (range === '1M') start.setDate(end.getDate() - 30);

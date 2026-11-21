@@ -46,9 +46,9 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-[#0D0221]">
+      <body className="min-h-full flex flex-col bg-[#FAF6F4] text-[#491F40]">
         <VVStoreProvider>
-          <Suspense fallback={<div className="h-[76px] border-b border-[#0D0221]/10 bg-white" />}>
+          <Suspense fallback={<div className="h-[76px] border-b border-[#E0C188]/20 bg-[#491F40]" />}>
             <Navbar />
           </Suspense>
           <main className="flex-1">{children}</main>

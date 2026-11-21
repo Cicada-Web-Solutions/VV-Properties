@@ -43,25 +43,25 @@ export function PropertyLightbox({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex flex-col bg-[#0D0221]/95 p-4 text-white backdrop-blur-xs"
+      className="fixed inset-0 z-[100] flex flex-col bg-[#32132B]/96 p-4 text-white backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
       aria-label={`${title} gallery lightbox`}
     >
       {/* Top Bar */}
-      <div className="flex items-center justify-between gap-4 pb-3">
+      <div className="flex items-center justify-between gap-4 border-b border-[#E0C188]/20 pb-3">
         <div className="min-w-0">
-          <p className="truncate font-display text-xl font-medium text-white">
+          <p className="truncate font-display text-xl font-semibold text-white">
             {title}
           </p>
-          <p className="text-xs text-[#CDE6F5]">
+          <p className="text-xs text-[#E0C188]">
             Image {safeIdx + 1} of {images.length}
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white hover:text-[#0D0221]"
+          className="flex h-10 w-10 items-center justify-center rounded-sm border border-[#E0C188]/30 bg-[#491F40]/70 text-white transition-colors hover:border-[#E0C188] hover:bg-[#CE8936] hover:text-[#491F40]"
           aria-label="Close lightbox"
         >
           <X className="h-5 w-5" />
@@ -87,12 +87,12 @@ export function PropertyLightbox({
           }
           touchStartX.current = null;
         }}
-        className="relative flex flex-1 items-center justify-center overflow-hidden"
+        className="relative flex flex-1 items-center justify-center overflow-hidden py-4"
       >
         <IdbImage
           src={images[safeIdx]}
           alt={`${title} gallery view ${safeIdx + 1}`}
-          className="max-h-[75vh] max-w-full rounded-xl object-contain"
+          className="max-h-[75vh] max-w-full rounded-md border border-[#E0C188]/20 object-contain shadow-2xl"
         />
 
         {images.length > 1 && (
@@ -103,7 +103,7 @@ export function PropertyLightbox({
                 onChangeIndex((safeIdx - 1 + images.length) % images.length)
               }
               aria-label="Previous gallery image"
-              className="absolute left-2 flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-[#0D0221]/70 text-white transition-colors hover:bg-[#4062BB] sm:left-4"
+              className="absolute left-2 flex h-11 w-11 items-center justify-center rounded-sm border border-[#E0C188]/35 bg-[#491F40]/85 text-white transition-colors hover:bg-[#CE8936] hover:text-[#491F40] sm:left-4"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -111,7 +111,7 @@ export function PropertyLightbox({
               type="button"
               onClick={() => onChangeIndex((safeIdx + 1) % images.length)}
               aria-label="Next gallery image"
-              className="absolute right-2 flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-[#0D0221]/70 text-white transition-colors hover:bg-[#4062BB] sm:right-4"
+              className="absolute right-2 flex h-11 w-11 items-center justify-center rounded-sm border border-[#E0C188]/35 bg-[#491F40]/85 text-white transition-colors hover:bg-[#CE8936] hover:text-[#491F40] sm:right-4"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -121,17 +121,17 @@ export function PropertyLightbox({
 
       {/* Thumbnails Strip */}
       {images.length > 1 && (
-        <div className="mt-4 flex justify-center gap-2.5 overflow-x-auto pb-1">
+        <div className="mt-2 flex justify-center gap-2.5 overflow-x-auto pb-1">
           {images.map((img, idx) => (
             <button
               key={`${img}-${idx}`}
               type="button"
               onClick={() => onChangeIndex(idx)}
               className={cn(
-                'h-14 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all',
+                'h-14 w-20 shrink-0 overflow-hidden rounded-sm border-2 transition-all',
                 idx === safeIdx
-                  ? 'border-[#CDE6F5] opacity-100'
-                  : 'border-transparent opacity-55 hover:opacity-90'
+                  ? 'border-[#E0C188] opacity-100'
+                  : 'border-transparent opacity-50 hover:opacity-85'
               )}
               aria-label={`Select gallery image ${idx + 1}`}
             >

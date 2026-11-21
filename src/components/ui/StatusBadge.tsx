@@ -10,9 +10,9 @@ interface StatusBadgeProps {
 }
 
 /**
- * Matches the supplied Design System UI Elements:
- * - Available: #49A078 green dot & label on soft tint
- * - Sold: #F06543 coral red alert icon & label on soft tint
+ * Architectural availability indicator aligned with the Golden Raisin palette:
+ * - Available: crisp deep-forest dot & readable label on soft warm ivory tint
+ * - Sold: Terracotta Clay (#D6866B) alert icon & label
  */
 export function StatusBadge({
   status,
@@ -24,21 +24,21 @@ export function StatusBadge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full font-medium tracking-tight',
-        size === 'sm' ? 'px-3 py-1 text-xs' : 'px-3.5 py-1.5 text-sm',
+        'inline-flex items-center gap-1.5 rounded-sm font-semibold tracking-wide uppercase',
+        size === 'sm' ? 'px-2.5 py-1 text-[10.5px]' : 'px-3 py-1.5 text-xs',
         isAvailable
-          ? 'bg-[#49A078]/12 text-[#337B59] border border-[#49A078]/25'
-          : 'bg-[#F06543]/12 text-[#D24B2B] border border-[#F06543]/25',
+          ? 'border border-[#491F40]/15 bg-[#FAF6F4] text-[#2F6A4A]'
+          : 'border border-[#D6866B]/45 bg-[#D6866B]/15 text-[#9C4429]',
         className
       )}
     >
       {isAvailable ? (
         <span
-          className="h-2 w-2 rounded-full bg-[#49A078]"
+          className="h-1.5 w-1.5 rounded-full bg-[#2F7D57]"
           aria-hidden="true"
         />
       ) : (
-        <AlertCircle className="h-3.5 w-3.5 text-[#F06543]" aria-hidden="true" />
+        <AlertCircle className="h-3.5 w-3.5 text-[#D6866B]" aria-hidden="true" />
       )}
       <span>{isAvailable ? 'Available' : 'Sold'}</span>
     </span>

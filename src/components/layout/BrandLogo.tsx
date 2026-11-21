@@ -12,7 +12,7 @@ interface BrandLogoProps {
 }
 
 /**
- * Renders the exact user-supplied V.V Properties logo mark alongside the editorial wordmark.
+ * Renders the official V.V Properties logo mark alongside a sculpted two-tier architectural wordmark.
  */
 export function BrandLogo({
   tone = 'dark',
@@ -20,18 +20,18 @@ export function BrandLogo({
   size = 'md',
   className,
 }: BrandLogoProps) {
-  const imgSize = size === 'sm' ? 'h-8 w-8' : 'h-10 w-10';
-  const dim = size === 'sm' ? 32 : 40;
+  const imgSize = size === 'sm' ? 'h-9 w-9' : 'h-11 w-11';
+  const dim = size === 'sm' ? 36 : 44;
 
   return (
-    <span className={cn('inline-flex items-center gap-3', className)}>
+    <span className={cn('group inline-flex items-center gap-3', className)}>
       <span
         className={cn(
-          'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border bg-white shadow-xs',
+          'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-sm border bg-white shadow-sm transition-transform duration-300 group-hover:scale-[1.03]',
           imgSize,
           tone === 'light'
-            ? 'border-white/25'
-            : 'border-[#0D0221]/12'
+            ? 'border-[#E0C188]/50'
+            : 'border-[#DBCCC6]'
         )}
       >
         <Image
@@ -47,11 +47,21 @@ export function BrandLogo({
         <span className="flex flex-col leading-none">
           <span
             className={cn(
-              'font-display text-[19px] font-medium tracking-[0.06em] sm:text-[21px]',
-              tone === 'light' ? 'text-white' : 'text-[#0D0221]'
+              'font-display text-[20px] font-semibold tracking-[0.12em] transition-colors sm:text-[22px]',
+              tone === 'light'
+                ? 'text-white group-hover:text-[#E0C188]'
+                : 'text-[#491F40] group-hover:text-[#CE8936]'
             )}
           >
             {SITE_CONFIG.shortWordmark}
+          </span>
+          <span
+            className={cn(
+              'mt-[3px] text-[9px] font-semibold tracking-[0.32em] uppercase',
+              tone === 'light' ? 'text-[#E0C188]' : 'text-[#9A5F1D]'
+            )}
+          >
+            Coimbatore
           </span>
         </span>
       )}

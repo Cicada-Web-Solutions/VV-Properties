@@ -4,7 +4,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Building, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PropertyCard } from '@/components/properties/PropertyCard';
-import { PropertyFiltersBar } from '@/components/properties/PropertyFiltersBar';
+import {
+  PRICE_PRESETS,
+  PropertyFiltersBar,
+} from '@/components/properties/PropertyFiltersBar';
 import { AccentHeadline } from '@/components/ui/AccentHeadline';
 import { useVVStore } from '@/context/VVStoreContext';
 import { useScrollReveal } from '@/hooks/useGsapReveal';
@@ -63,10 +66,17 @@ export function PropertiesCatalog() {
     };
   }, [refreshCatalog]);
 
-  const [filters, setFilters] = useState<PropertyFilterState>(() => ({
-    ...DEFAULT_FILTERS,
-    type: parseInitialType(searchParams.get('type')),
-  }));
+  const [filters, setFilters] = useState<PropertyFilterState>(() => {
+    const budgetId = searchParams.get('budget');
+    const matchedBudget = PRICE_PRESETS.find((p) => p.id === budgetId);
+    return {
+      ...DEFAULT_FILTERS,
+      search: searchParams.get('q') ?? '',
+      type: parseInitialType(searchParams.get('type')),
+      minPrice: matchedBudget?.min ?? null,
+      maxPrice: matchedBudget?.max ?? null,
+    };
+  });
   const [page, setPage] = useState(1);
   const [resetTick, setResetTick] = useState(0);
 
@@ -171,31 +181,33 @@ export function PropertiesCatalog() {
   };
 
   return (
-    <div className="bg-white">
-      {/* Editorial Catalogue Header */}
-      <section className="border-b border-[#0D0221]/8 bg-[#CDE6F5]/20 py-14 sm:py-16">
+    <div className="bg-[#FAF6F4]">
+      {/* Architectural Deep Plum Catalogue Header */}
+      <section className="relative bg-[#491F40] pt-28 pb-20 text-white sm:pt-32 sm:pb-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="inline-flex items-center gap-3 text-[11px] font-semibold tracking-[0.2em] text-[#0D0221]/65 uppercase">
+          <div className="inline-flex items-center gap-3 text-[11px] font-semibold tracking-[0.26em] text-[#E0C188] uppercase">
             <span>PORTFOLIO CATALOGUE</span>
-            <span className="h-px w-10 bg-[#0D0221]/20" aria-hidden="true" />
+            <span className="h-px w-10 bg-[#E0C188]/45" aria-hidden="true" />
           </div>
 
-          <div className="mt-3 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div className="mt-3.5 flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
               <AccentHeadline
                 as="h1"
                 text="Curated Properties"
                 accentWord="Properties"
-                className="font-display text-4xl font-medium text-[#0D0221] sm:text-5xl"
+                accentClassName="text-[#E0C188]"
+                className="font-display text-4xl font-semibold text-white sm:text-5xl lg:text-[54px]"
               />
-              <p className="mt-2.5 max-w-2xl text-sm leading-relaxed text-[#0D0221]/72 sm:text-base">
-                Explore vetted villas, sky penthouses, land parcels, and
-                commercial estates priced transparently in Indian Rupees (INR).
+              <p className="mt-3 max-w-2xl text-sm leading-[1.72] text-[#DBCCC6]/90 sm:text-base">
+                Explore residential homes, plots, villas, and commercial
+                properties represented by V.V Properties, priced transparently in
+                Indian Rupees (INR).
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-[#0D0221]/12 bg-white px-4 py-1.5 text-xs font-semibold text-[#0D0221]">
+              <span className="rounded-sm border border-[#E0C188]/30 bg-[#32132B]/70 px-4 py-2 text-xs font-semibold text-[#E0C188]">
                 {filteredProperties.length}{' '}
                 {filteredProperties.length === 1 ? 'property' : 'properties'}{' '}
                 found
@@ -209,7 +221,7 @@ export function PropertiesCatalog() {
                     sort: e.target.value as PropertyFilterState['sort'],
                   })
                 }
-                className="rounded-full border border-[#0D0221]/12 bg-white px-4 py-1.5 text-xs font-medium text-[#0D0221] focus:border-[#4062BB] focus:outline-none"
+                className="rounded-sm border border-[#E0C188]/35 bg-[#32132B] px-4 py-2 text-xs font-medium text-white focus:border-[#E0C188] focus:outline-none"
               >
                 <option value="featured">Sort: Curated Order</option>
                 <option value="price-asc">Price: Low to High</option>
@@ -218,51 +230,52 @@ export function PropertiesCatalog() {
               </select>
             </div>
           </div>
-
-          <div className="mt-8">
-            <PropertyFiltersBar
-              key={resetTick}
-              filters={filters}
-              availableAreas={availableAreas}
-              onChange={handleFilterChange}
-              onReset={handleReset}
-            />
-          </div>
         </div>
       </section>
 
+      {/* Overlapping Filters Bar */}
+      <div className="relative z-20 mx-auto -mt-9 max-w-7xl px-4 sm:px-6 lg:px-8">
+        <PropertyFiltersBar
+          key={resetTick}
+          filters={filters}
+          availableAreas={availableAreas}
+          onChange={handleFilterChange}
+          onReset={handleReset}
+        />
+      </div>
+
       {/* Grid & Pagination */}
-      <section className="py-12 sm:py-16 lg:py-20">
+      <section className="py-14 sm:py-16 lg:py-20">
         <div ref={gridRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {!isHydrated ? (
             <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="h-96 animate-pulse rounded-2xl border border-[#0D0221]/8 bg-[#CDE6F5]/25"
+                  className="h-[430px] animate-pulse rounded-md border border-[#DBCCC6] bg-white/80"
                 />
               ))}
             </div>
           ) : paginated.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#0D0221]/20 bg-[#CDE6F5]/15 px-6 py-20 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#4062BB] shadow-xs">
+            <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-[#DBCCC6] bg-white px-6 py-20 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] text-[#CE8936]">
                 <Building className="h-6 w-6" />
               </div>
-              <h2 className="mt-4 font-display text-3xl font-medium text-[#0D0221]">
+              <h2 className="mt-5 font-display text-3xl font-semibold text-[#491F40]">
                 {publishedProperties.length === 0
                   ? 'No properties currently listed'
                   : 'No properties match your filters'}
               </h2>
-              <p className="mt-2 max-w-md text-sm text-[#0D0221]/70">
+              <p className="mt-2.5 max-w-md text-sm leading-relaxed text-[#491F40]/72">
                 {publishedProperties.length === 0
-                  ? 'Our portfolio is currently being updated with new premium developments. Please check back shortly or contact our advisory team.'
+                  ? 'Our portfolio is currently being updated with new residential, land, and commercial opportunities. Please check back shortly or contact V.V Properties.'
                   : 'Try clearing a region selection or expanding your INR budget range to browse the full curated catalogue.'}
               </p>
               {publishedProperties.length > 0 && (
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="mt-6 rounded-lg bg-[#4062BB] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0D0221]"
+                  className="mt-6 rounded-sm bg-gradient-to-br from-[#E0C188] to-[#CE8936] px-6 py-2.5 text-xs font-semibold tracking-wider text-[#491F40] uppercase transition-all hover:brightness-105"
                 >
                   Reset All Filters
                 </button>
@@ -289,7 +302,7 @@ export function PropertiesCatalog() {
                     disabled={currentPage <= 1}
                     onClick={() => changePage(currentPage - 1)}
                     aria-label="Previous page"
-                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#0D0221]/15 bg-white text-[#0D0221] transition-colors hover:border-[#4062BB] hover:text-[#4062BB] disabled:opacity-40"
+                    className="flex h-10 w-10 items-center justify-center rounded-sm border border-[#DBCCC6] bg-white text-[#491F40] transition-colors hover:border-[#491F40] hover:bg-[#491F40] hover:text-white disabled:opacity-40"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
@@ -305,10 +318,10 @@ export function PropertiesCatalog() {
                           pageNum === currentPage ? 'page' : undefined
                         }
                         className={cn(
-                          'flex h-10 min-w-10 items-center justify-center rounded-lg border px-3 text-sm font-medium transition-colors',
+                          'flex h-10 min-w-10 items-center justify-center rounded-sm border px-3 text-sm font-semibold transition-colors',
                           pageNum === currentPage
-                            ? 'border-[#0D0221] bg-[#0D0221] text-white'
-                            : 'border-[#0D0221]/15 bg-white text-[#0D0221] hover:border-[#4062BB] hover:text-[#4062BB]'
+                            ? 'border-[#491F40] bg-[#491F40] text-[#E0C188]'
+                            : 'border-[#DBCCC6] bg-white text-[#491F40] hover:border-[#CE8936] hover:text-[#9A5F1D]'
                         )}
                       >
                         {pageNum}
@@ -321,7 +334,7 @@ export function PropertiesCatalog() {
                     disabled={currentPage >= totalPages}
                     onClick={() => changePage(currentPage + 1)}
                     aria-label="Next page"
-                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#0D0221]/15 bg-white text-[#0D0221] transition-colors hover:border-[#4062BB] hover:text-[#4062BB] disabled:opacity-40"
+                    className="flex h-10 w-10 items-center justify-center rounded-sm border border-[#DBCCC6] bg-white text-[#491F40] transition-colors hover:border-[#491F40] hover:bg-[#491F40] hover:text-white disabled:opacity-40"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>

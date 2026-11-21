@@ -101,7 +101,7 @@ export function PropertyFiltersBar({
         <button
           type="button"
           onClick={() => setAreaOpen((prev) => !prev)}
-          className="flex w-full items-center justify-between gap-2 rounded-lg border border-[#0D0221]/15 bg-white px-3.5 py-2.5 text-left text-sm text-[#0D0221] transition-colors hover:border-[#4062BB] focus:outline-none focus:ring-2 focus:ring-[#4062BB]/25"
+          className="flex w-full items-center justify-between gap-2 rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] px-3.5 py-2.5 text-left text-sm text-[#491F40] transition-colors hover:border-[#CE8936] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#CE8936]/25"
           aria-expanded={areaOpen}
         >
           <span className="truncate">
@@ -113,16 +113,16 @@ export function PropertyFiltersBar({
           </span>
           <ChevronDown
             className={cn(
-              'h-4 w-4 shrink-0 text-[#0D0221]/50 transition-transform',
+              'h-4 w-4 shrink-0 text-[#491F40]/55 transition-transform',
               areaOpen && 'rotate-180'
             )}
           />
         </button>
 
         {areaOpen && (
-          <div className="absolute left-0 z-30 mt-2 max-h-60 w-full min-w-[220px] overflow-y-auto rounded-xl border border-[#0D0221]/12 bg-white p-2 shadow-xl">
+          <div className="absolute left-0 z-30 mt-2 max-h-60 w-full min-w-[220px] overflow-y-auto rounded-md border border-[#DBCCC6] bg-white p-2 shadow-[0_18px_40px_rgba(73,31,64,0.16)]">
             {availableAreas.length === 0 ? (
-              <p className="px-3 py-2 text-xs text-[#0D0221]/60">
+              <p className="px-3 py-2 text-xs text-[#491F40]/60">
                 No regions available
               </p>
             ) : (
@@ -133,15 +133,15 @@ export function PropertyFiltersBar({
                     key={area}
                     type="button"
                     onClick={() => toggleArea(area)}
-                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-[#0D0221] transition-colors hover:bg-[#CDE6F5]/40"
+                    className="flex w-full items-center justify-between rounded-sm px-3 py-2 text-left text-sm text-[#491F40] transition-colors hover:bg-[#FAF6F4]"
                   >
                     <span className="truncate">{area}</span>
                     <span
                       className={cn(
-                        'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
+                        'flex h-4 w-4 shrink-0 items-center justify-center rounded-xs border',
                         checked
-                          ? 'border-[#4062BB] bg-[#4062BB] text-white'
-                          : 'border-[#0D0221]/25 bg-white'
+                          ? 'border-[#491F40] bg-[#491F40] text-[#E0C188]'
+                          : 'border-[#DBCCC6] bg-white'
                       )}
                     >
                       {checked && <Check className="h-3 w-3" />}
@@ -165,7 +165,7 @@ export function PropertyFiltersBar({
               type: e.target.value as PropertyType | 'all',
             })
           }
-          className="w-full rounded-lg border border-[#0D0221]/15 bg-white px-3.5 py-2.5 text-sm text-[#0D0221] transition-colors hover:border-[#4062BB] focus:border-[#4062BB] focus:outline-none focus:ring-2 focus:ring-[#4062BB]/25"
+          className="w-full rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] px-3.5 py-2.5 text-sm text-[#491F40] transition-colors hover:border-[#CE8936] focus:border-[#CE8936] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#CE8936]/25"
         >
           {PROPERTY_TYPES.map((t) => (
             <option key={t.value} value={t.value}>
@@ -190,7 +190,7 @@ export function PropertyFiltersBar({
               maxPrice: preset.max,
             });
           }}
-          className="w-full rounded-lg border border-[#0D0221]/15 bg-white px-3.5 py-2.5 text-sm text-[#0D0221] transition-colors hover:border-[#4062BB] focus:border-[#4062BB] focus:outline-none focus:ring-2 focus:ring-[#4062BB]/25"
+          className="w-full rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] px-3.5 py-2.5 text-sm text-[#491F40] transition-colors hover:border-[#CE8936] focus:border-[#CE8936] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#CE8936]/25"
         >
           {PRICE_PRESETS.map((preset) => (
             <option key={preset.id} value={preset.id}>
@@ -211,7 +211,7 @@ export function PropertyFiltersBar({
               availability: e.target.value as PropertyFilterState['availability'],
             })
           }
-          className="w-full rounded-lg border border-[#0D0221]/15 bg-white px-3.5 py-2.5 text-sm text-[#0D0221] transition-colors hover:border-[#4062BB] focus:border-[#4062BB] focus:outline-none focus:ring-2 focus:ring-[#4062BB]/25"
+          className="w-full rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] px-3.5 py-2.5 text-sm text-[#491F40] transition-colors hover:border-[#CE8936] focus:border-[#CE8936] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#CE8936]/25"
         >
           <option value="all">All Statuses</option>
           <option value="available">Available Only</option>
@@ -222,47 +222,63 @@ export function PropertyFiltersBar({
   );
 
   return (
-    <div className="rounded-2xl border border-[#0D0221]/10 bg-white p-4 shadow-xs sm:p-5">
-      <div className="flex flex-col gap-3 md:grid md:grid-cols-12 md:items-center">
-        {/* Search Input (Always visible on desktop & mobile) */}
-        <div className="relative md:col-span-4">
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-[#0D0221]/45" />
-          <input
-            type="search"
-            value={searchDraft}
-            onChange={(e) => setSearchDraft(e.target.value)}
-            placeholder="Search by property name or area..."
-            aria-label="Search by property name"
-            className="w-full rounded-lg border border-[#0D0221]/15 bg-white py-2.5 pr-4 pl-10 text-sm text-[#0D0221] placeholder:text-[#0D0221]/45 focus:border-[#4062BB] focus:outline-none focus:ring-2 focus:ring-[#4062BB]/25"
-          />
+    <div className="rounded-md border border-[#DBCCC6] bg-white p-4 shadow-[0_18px_46px_rgba(73,31,64,0.12)] sm:p-5">
+      <div className="flex flex-col gap-3 xl:grid xl:grid-cols-12 xl:items-center">
+        {/* Search Input + Tablet/Mobile Action Row */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center xl:col-span-3">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-[#CE8936]" />
+            <input
+              type="search"
+              value={searchDraft}
+              onChange={(e) => setSearchDraft(e.target.value)}
+              placeholder="Search by property name or area..."
+              aria-label="Search by property name"
+              className="w-full rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] py-2.5 pr-4 pl-10 text-sm text-[#491F40] placeholder:text-[#491F40]/45 focus:border-[#CE8936] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#CE8936]/25"
+            />
+          </div>
+
+          {/* Mobile/Tablet Action Buttons */}
+          <div className="flex items-center gap-2 xl:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] px-4 py-2.5 text-sm font-medium text-[#491F40] md:hidden"
+            >
+              <SlidersHorizontal className="h-4 w-4 text-[#CE8936]" />
+              <span>Filters</span>
+              {activeFilterCount > 0 && (
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#491F40] px-1.5 text-[11px] font-semibold text-[#E0C188]">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleReset}
+              disabled={activeFilterCount === 0 && !searchDraft}
+              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-sm border border-[#DBCCC6] bg-white px-4 py-2.5 text-sm font-medium text-[#491F40] transition-colors hover:border-[#491F40] hover:bg-[#491F40] hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
+              title="Reset all filters"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>Reset</span>
+            </button>
+          </div>
         </div>
 
-        {/* Desktop Inline Filters */}
-        <div className="hidden md:col-span-7 md:grid md:grid-cols-4 md:gap-2.5">
+        {/* Tablet & Desktop Inline Filters */}
+        <div className="hidden md:grid md:grid-cols-4 md:gap-2.5 xl:col-span-8">
           {filterControls}
         </div>
 
-        {/* Reset Button (Desktop) & Filter Sheet Trigger (Mobile) */}
-        <div className="flex items-center justify-between gap-2 md:col-span-1 md:justify-end">
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-[#0D0221]/15 bg-[#CDE6F5]/25 px-4 py-2.5 text-sm font-medium text-[#0D0221] md:hidden"
-          >
-            <SlidersHorizontal className="h-4 w-4 text-[#4062BB]" />
-            <span>Filters</span>
-            {activeFilterCount > 0 && (
-              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#4062BB] px-1.5 text-[11px] font-semibold text-white">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
-
+        {/* Desktop Reset Button */}
+        <div className="hidden xl:col-span-1 xl:flex xl:justify-end">
           <button
             type="button"
             onClick={handleReset}
             disabled={activeFilterCount === 0 && !searchDraft}
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#0D0221]/15 bg-white px-3.5 py-2.5 text-sm font-medium text-[#0D0221] transition-colors hover:border-[#4062BB] hover:text-[#4062BB] disabled:cursor-not-allowed disabled:opacity-45"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-sm border border-[#DBCCC6] bg-white px-3 py-2.5 text-sm font-medium text-[#491F40] transition-colors hover:border-[#491F40] hover:bg-[#491F40] hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
             title="Reset all filters"
           >
             <RotateCcw className="h-3.5 w-3.5" />
@@ -271,23 +287,23 @@ export function PropertyFiltersBar({
         </div>
       </div>
 
-      {/* Mobile Slide-Up Filter Panel (Wireframe Block A spec) */}
+      {/* Mobile Slide-Up Filter Panel */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-[80] flex items-end bg-[#0D0221]/50 backdrop-blur-[2px] md:hidden"
+          className="fixed inset-0 z-[80] flex items-end bg-[#32132B]/65 backdrop-blur-[2px] md:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Property Filters"
         >
-          <div className="w-full rounded-t-2xl bg-white p-5 pb-8 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#0D0221]/10 pb-3.5">
-              <h3 className="font-display text-2xl font-medium text-[#0D0221]">
+          <div className="w-full rounded-t-md border-t border-[#DBCCC6] bg-white p-5 pb-8 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#DBCCC6] pb-3.5">
+              <h3 className="font-display text-2xl font-semibold text-[#491F40]">
                 Refine Properties
               </h3>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg p-1.5 text-[#0D0221]/60 hover:bg-[#CDE6F5]/40"
+                className="rounded-sm p-1.5 text-[#491F40]/60 hover:bg-[#FAF6F4] hover:text-[#491F40]"
                 aria-label="Close filters panel"
               >
                 <X className="h-5 w-5" />
@@ -303,14 +319,14 @@ export function PropertyFiltersBar({
                   handleReset();
                   setMobileOpen(false);
                 }}
-                className="flex-1 rounded-lg border border-[#0D0221]/20 py-3 text-sm font-medium text-[#0D0221]"
+                className="flex-1 rounded-sm border border-[#491F40]/30 py-3 text-xs font-semibold tracking-wider text-[#491F40] uppercase"
               >
                 Reset All
               </button>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="flex-1 rounded-lg bg-[#4062BB] py-3 text-sm font-medium text-white"
+                className="flex-1 rounded-sm bg-gradient-to-br from-[#E0C188] to-[#CE8936] py-3 text-xs font-semibold tracking-wider text-[#491F40] uppercase"
               >
                 Show Results
               </button>

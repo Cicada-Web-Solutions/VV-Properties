@@ -8,15 +8,17 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: 'Curated Properties',
   description:
-    'Browse luxury villas, penthouses, residences, land parcels, and commercial spaces curated by VV Properties in INR.',
+    'Browse residential homes, villas, plots, land parcels, and commercial spaces represented by V.V Properties in INR.',
 };
 
 export default function PropertiesPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="h-44 animate-pulse rounded-2xl bg-[#CDE6F5]/30" />
+        <div className="bg-[#FAF6F4] pt-28 pb-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="h-48 animate-pulse rounded-md bg-[#DBCCC6]/40" />
+          </div>
         </div>
       }
     >

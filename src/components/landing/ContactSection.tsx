@@ -118,44 +118,151 @@ export function ContactSection() {
     <section
       id="contact"
       ref={sectionRef}
-      className="bg-[#CDE6F5]/20 py-20 lg:py-28"
+      className="bg-[#491F40] py-20 text-white lg:py-28"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div data-reveal className="max-w-2xl">
-          <div className="inline-flex items-center gap-3 text-[11px] font-semibold tracking-[0.2em] text-[#0D0221]/65 uppercase">
-            <span>CONTACT V.V PROPERTIES</span>
-            <span className="h-px w-10 bg-[#0D0221]/20" aria-hidden="true" />
-          </div>
-          <AccentHeadline
-            as="h2"
-            text="Begin a Conversation with V.V Properties."
-            accentWord="Conversation"
-            className="mt-3 font-display text-3xl leading-[1.12] font-medium text-[#0D0221] sm:text-4xl lg:text-[44px]"
-          />
-          <p className="mt-3 text-base text-[#0D0221]/72">
-            Connect with our team for residential and commercial property sales,
-            land and plot transactions, investment guidance, and consultation.
-          </p>
-        </div>
+        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-12">
+          {/* Left Column: Editorial Contact Details + Google Maps */}
+          <div data-reveal className="flex flex-col gap-6 lg:col-span-5">
+            <div>
+              <div className="inline-flex items-center gap-3 text-[11px] font-semibold tracking-[0.26em] text-[#E0C188] uppercase">
+                <span>GET IN TOUCH</span>
+                <span className="h-px w-10 bg-[#E0C188]/45" aria-hidden="true" />
+              </div>
+              <AccentHeadline
+                as="h2"
+                text="Let's Find the Right Property."
+                accentWord="Property."
+                accentClassName="text-[#E0C188]"
+                className="mt-3.5 font-display text-[34px] leading-[1.12] font-semibold text-white sm:text-[42px] lg:text-[46px]"
+              />
+              <p className="mt-3.5 text-[15.5px] leading-[1.72] text-[#DBCCC6]/90">
+                Connect with V.V Properties for residential and commercial
+                property sales, land and plot transactions, investment guidance,
+                and real estate consultation.
+              </p>
 
-        <div className="mt-12 grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
-          {/* Contact Enquiry Form */}
+              <div className="mt-5 inline-flex items-center gap-1.5 rounded-sm border border-[#E0C188]/30 bg-[#32132B]/70 px-3.5 py-1.5 text-xs font-medium text-[#E0C188]">
+                <Star className="h-3.5 w-3.5 fill-[#CE8936] text-[#CE8936]" />
+                <span>{SITE_CONFIG.contact.rating.label}</span>
+              </div>
+            </div>
+
+            {/* Direct Contact Details */}
+            <div className="rounded-md border border-[#E0C188]/20 bg-[#32132B]/55 p-6">
+              <h3 className="font-display text-2xl font-semibold text-white">
+                {SITE_CONFIG.brandName}
+              </h3>
+              <ul className="mt-4 space-y-3.5 text-sm text-[#DBCCC6]/92">
+                <li className="flex items-start gap-3">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#E0C188]" />
+                  <div>
+                    <p className="text-[11px] font-semibold tracking-[0.14em] text-[#E0C188]/85 uppercase">
+                      Office Address
+                    </p>
+                    <p className="mt-0.5 text-[#FAF6F4]/90">
+                      {SITE_CONFIG.contact.addressLine1},{' '}
+                      {SITE_CONFIG.contact.addressLine2}
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#E0C188]" />
+                  <div>
+                    <p className="text-[11px] font-semibold tracking-[0.14em] text-[#E0C188]/85 uppercase">
+                      Primary Contact ({SITE_CONFIG.contact.primaryContactName})
+                    </p>
+                    <a
+                      href={SITE_CONFIG.contact.phoneHref}
+                      className="mt-0.5 inline-block font-medium text-white transition-colors hover:text-[#E0C188]"
+                    >
+                      {SITE_CONFIG.contact.phoneDisplay}
+                    </a>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#E0C188]" />
+                  <div>
+                    <p className="text-[11px] font-semibold tracking-[0.14em] text-[#E0C188]/85 uppercase">
+                      Email
+                    </p>
+                    <a
+                      href={`mailto:${SITE_CONFIG.contact.email}`}
+                      className="mt-0.5 inline-block break-all font-medium text-white transition-colors hover:text-[#E0C188]"
+                    >
+                      {SITE_CONFIG.contact.email}
+                    </a>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#E0C188]" />
+                  <div>
+                    <p className="text-[11px] font-semibold tracking-[0.14em] text-[#E0C188]/85 uppercase">
+                      Business Hours
+                    </p>
+                    <p className="mt-0.5 text-[#FAF6F4]/90">
+                      {SITE_CONFIG.contact.workingHours}
+                    </p>
+                  </div>
+                </li>
+              </ul>
+
+              {/* Direct Action Buttons */}
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                <a
+                  href={SITE_CONFIG.contact.phoneHref}
+                  className="inline-flex items-center gap-2 rounded-sm bg-gradient-to-br from-[#E0C188] to-[#CE8936] px-4 py-2.5 text-xs font-semibold tracking-wider text-[#491F40] uppercase transition-all hover:brightness-105"
+                >
+                  <Phone className="h-3.5 w-3.5" />
+                  <span>Call Now</span>
+                </a>
+                <a
+                  href={SITE_CONFIG.contact.whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-sm border border-[#E0C188]/45 px-4 py-2.5 text-xs font-semibold tracking-wider text-white uppercase transition-colors hover:border-[#E0C188] hover:bg-white/10"
+                >
+                  <span>WhatsApp</span>
+                </a>
+                <a
+                  href={SITE_CONFIG.contact.mapCoordinates.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-[#E0C188]/45 px-4 py-2.5 text-xs font-semibold tracking-wider text-[#E0C188] uppercase transition-colors hover:border-[#E0C188] hover:bg-white/10"
+                >
+                  <span>Get Directions</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Elevated Crisp White Enquiry Form Card (Compact, Zero Empty Gaps) */}
           <div
             data-reveal
-            className="rounded-2xl border border-[#0D0221]/10 bg-white p-6 shadow-sm sm:p-8 lg:col-span-7"
+            className="self-start rounded-md border border-[#DBCCC6]/40 bg-white p-6 text-[#491F40] shadow-[0_26px_60px_rgba(24,7,20,0.34)] sm:p-9 lg:col-span-7"
           >
+            <div className="mb-6 border-b border-[#DBCCC6]/80 pb-4">
+              <p className="text-[11px] font-semibold tracking-[0.22em] text-[#9A5F1D] uppercase">
+                PROPERTY ENQUIRY
+              </p>
+              <h3 className="mt-1 font-display text-3xl font-semibold text-[#491F40]">
+                Request Property Details
+              </h3>
+            </div>
+
             {submittedSuccess ? (
-              <div className="flex flex-col items-start justify-center py-8">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#49A078]/15 text-[#49A078]">
+              <div className="flex flex-col items-start justify-center py-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-[#2F7D57]/12 text-[#2F7D57]">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
-                <h3 className="mt-5 font-display text-3xl font-medium text-[#0D0221]">
+                <h4 className="mt-5 font-display text-3xl font-semibold text-[#491F40]">
                   Thank You for Your Enquiry
-                </h3>
-                <p className="mt-2.5 max-w-md text-sm leading-relaxed text-[#0D0221]/75">
+                </h4>
+                <p className="mt-2.5 max-w-md text-sm leading-relaxed text-[#491F40]/75">
                   Your enquiry has been received by V.V Properties and saved
                   under{' '}
-                  <strong className="font-semibold text-[#0D0221]">
+                  <strong className="font-semibold text-[#491F40]">
                     Admin &rarr; Enquiries
                   </strong>
                   .
@@ -163,7 +270,7 @@ export function ContactSection() {
                 <button
                   type="button"
                   onClick={() => setSubmittedSuccess(false)}
-                  className="mt-6 rounded-lg border border-[#4062BB] px-5 py-2.5 text-sm font-medium text-[#4062BB] transition-colors hover:bg-[#4062BB] hover:text-white"
+                  className="mt-6 rounded-sm border border-[#491F40] px-5 py-2.5 text-xs font-semibold tracking-wider text-[#491F40] uppercase transition-colors hover:bg-[#491F40] hover:text-white"
                 >
                   Send Another Enquiry
                 </button>
@@ -192,9 +299,9 @@ export function ContactSection() {
                   <div>
                     <label
                       htmlFor="contact-name"
-                      className="block text-xs font-semibold tracking-wider text-[#0D0221] uppercase"
+                      className="block text-[11px] font-semibold tracking-[0.14em] text-[#491F40]/85 uppercase"
                     >
-                      Full Name <span className="text-[#F06543]">*</span>
+                      Full Name <span className="text-[#D6866B]">*</span>
                     </label>
                     <input
                       id="contact-name"
@@ -204,18 +311,21 @@ export function ContactSection() {
                       onChange={(e) => {
                         setFullName(e.target.value);
                         if (errors.fullName)
-                          setErrors((prev) => ({ ...prev, fullName: undefined }));
+                          setErrors((prev) => ({
+                            ...prev,
+                            fullName: undefined,
+                          }));
                       }}
                       placeholder="Your full name"
                       className={cn(
-                        'mt-2 w-full rounded-lg border bg-white px-4 py-3 text-sm text-[#0D0221] placeholder:text-[#0D0221]/40 focus:outline-none focus:ring-2',
+                        'mt-1.5 w-full rounded-sm border bg-[#FAF6F4] px-4 py-3 text-sm text-[#491F40] placeholder:text-[#491F40]/40 focus:bg-white focus:outline-none focus:ring-2',
                         errors.fullName
-                          ? 'border-[#F06543] focus:ring-[#F06543]/30'
-                          : 'border-[#0D0221]/15 focus:border-[#4062BB] focus:ring-[#4062BB]/25'
+                          ? 'border-[#D6866B] focus:ring-[#D6866B]/30'
+                          : 'border-[#DBCCC6] focus:border-[#CE8936] focus:ring-[#CE8936]/25'
                       )}
                     />
                     {errors.fullName && (
-                      <p className="mt-1.5 text-xs text-[#F06543]">
+                      <p className="mt-1.5 text-xs font-medium text-[#B95234]">
                         {errors.fullName}
                       </p>
                     )}
@@ -224,9 +334,9 @@ export function ContactSection() {
                   <div>
                     <label
                       htmlFor="contact-phone"
-                      className="block text-xs font-semibold tracking-wider text-[#0D0221] uppercase"
+                      className="block text-[11px] font-semibold tracking-[0.14em] text-[#491F40]/85 uppercase"
                     >
-                      Phone Number <span className="text-[#F06543]">*</span>
+                      Phone Number <span className="text-[#D6866B]">*</span>
                     </label>
                     <input
                       id="contact-phone"
@@ -240,14 +350,14 @@ export function ContactSection() {
                       }}
                       placeholder="+91 99948 89221"
                       className={cn(
-                        'mt-2 w-full rounded-lg border bg-white px-4 py-3 text-sm text-[#0D0221] placeholder:text-[#0D0221]/40 focus:outline-none focus:ring-2',
+                        'mt-1.5 w-full rounded-sm border bg-[#FAF6F4] px-4 py-3 text-sm text-[#491F40] placeholder:text-[#491F40]/40 focus:bg-white focus:outline-none focus:ring-2',
                         errors.phone
-                          ? 'border-[#F06543] focus:ring-[#F06543]/30'
-                          : 'border-[#0D0221]/15 focus:border-[#4062BB] focus:ring-[#4062BB]/25'
+                          ? 'border-[#D6866B] focus:ring-[#D6866B]/30'
+                          : 'border-[#DBCCC6] focus:border-[#CE8936] focus:ring-[#CE8936]/25'
                       )}
                     />
                     {errors.phone && (
-                      <p className="mt-1.5 text-xs text-[#F06543]">
+                      <p className="mt-1.5 text-xs font-medium text-[#B95234]">
                         {errors.phone}
                       </p>
                     )}
@@ -258,7 +368,7 @@ export function ContactSection() {
                   <div>
                     <label
                       htmlFor="contact-email"
-                      className="block text-xs font-semibold tracking-wider text-[#0D0221] uppercase"
+                      className="block text-[11px] font-semibold tracking-[0.14em] text-[#491F40]/85 uppercase"
                     >
                       Email Address
                     </label>
@@ -273,14 +383,14 @@ export function ContactSection() {
                       }}
                       placeholder="name@example.com"
                       className={cn(
-                        'mt-2 w-full rounded-lg border bg-white px-4 py-3 text-sm text-[#0D0221] placeholder:text-[#0D0221]/40 focus:outline-none focus:ring-2',
+                        'mt-1.5 w-full rounded-sm border bg-[#FAF6F4] px-4 py-3 text-sm text-[#491F40] placeholder:text-[#491F40]/40 focus:bg-white focus:outline-none focus:ring-2',
                         errors.email
-                          ? 'border-[#F06543] focus:ring-[#F06543]/30'
-                          : 'border-[#0D0221]/15 focus:border-[#4062BB] focus:ring-[#4062BB]/25'
+                          ? 'border-[#D6866B] focus:ring-[#D6866B]/30'
+                          : 'border-[#DBCCC6] focus:border-[#CE8936] focus:ring-[#CE8936]/25'
                       )}
                     />
                     {errors.email && (
-                      <p className="mt-1.5 text-xs text-[#F06543]">
+                      <p className="mt-1.5 text-xs font-medium text-[#B95234]">
                         {errors.email}
                       </p>
                     )}
@@ -289,16 +399,16 @@ export function ContactSection() {
                   <div>
                     <label
                       htmlFor="contact-property"
-                      className="block text-xs font-semibold tracking-wider text-[#0D0221] uppercase"
+                      className="block text-[11px] font-semibold tracking-[0.14em] text-[#491F40]/85 uppercase"
                     >
                       Property Interested In{' '}
-                      <span className="text-[#F06543]">*</span>
+                      <span className="text-[#D6866B]">*</span>
                     </label>
                     <select
                       id="contact-property"
                       value={propertyId}
                       onChange={(e) => setUserPropertyChoice(e.target.value)}
-                      className="mt-2 w-full rounded-lg border border-[#0D0221]/15 bg-white px-4 py-3 text-sm text-[#0D0221] focus:border-[#4062BB] focus:outline-none focus:ring-2 focus:ring-[#4062BB]/25"
+                      className="mt-1.5 w-full rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] px-4 py-3 text-sm text-[#491F40] focus:border-[#CE8936] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#CE8936]/25"
                     >
                       <option value="general">General enquiry</option>
                       {publishedProperties.map((prop) => (
@@ -314,7 +424,7 @@ export function ContactSection() {
                 <div>
                   <label
                     htmlFor="contact-message"
-                    className="block text-xs font-semibold tracking-wider text-[#0D0221] uppercase"
+                    className="block text-[11px] font-semibold tracking-[0.14em] text-[#491F40]/85 uppercase"
                   >
                     Message &amp; Preferences
                   </label>
@@ -324,19 +434,18 @@ export function ContactSection() {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Share preferred viewing dates, property requirements, or investment criteria..."
-                    className="mt-2 w-full rounded-lg border border-[#0D0221]/15 bg-white px-4 py-3 text-sm text-[#0D0221] placeholder:text-[#0D0221]/40 focus:border-[#4062BB] focus:outline-none focus:ring-2 focus:ring-[#4062BB]/25"
+                    className="mt-1.5 w-full rounded-sm border border-[#DBCCC6] bg-[#FAF6F4] px-4 py-3 text-sm text-[#491F40] placeholder:text-[#491F40]/40 focus:border-[#CE8936] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#CE8936]/25"
                   />
                 </div>
 
                 <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs text-[#0D0221]/55">
-                    We respond promptly during business hours (Mon – Sun, 9:00 AM
-                    – 9:00 PM).
+                  <p className="text-xs text-[#491F40]/62">
+                    Open {SITE_CONFIG.contact.workingHours}.
                   </p>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#4062BB] px-6 py-3.5 text-sm font-medium text-white transition-all hover:bg-[#0D0221] disabled:opacity-60"
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-sm bg-gradient-to-br from-[#E0C188] to-[#CE8936] px-7 py-3.5 text-[13px] font-semibold tracking-wider text-[#491F40] uppercase shadow-sm transition-all hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-60"
                   >
                     <Send className="h-4 w-4" />
                     <span>{submitting ? 'Submitting...' : 'Submit Enquiry'}</span>
@@ -345,97 +454,37 @@ export function ContactSection() {
               </form>
             )}
           </div>
+        </div>
 
-          {/* Right Column: Google Maps Location Card + Business Contact Details */}
-          <div data-reveal className="flex flex-col gap-6 lg:col-span-5">
-            {/* Google Maps Embed Card */}
-            <div className="overflow-hidden rounded-2xl border border-[#0D0221]/10 bg-white shadow-sm">
-              <div className="relative h-56 w-full bg-[#CDE6F5]/40">
-                <iframe
-                  title="V.V Properties — Gandhinagar, Saibaba Colony, Coimbatore"
-                  src={SITE_CONFIG.contact.mapCoordinates.embedUrl}
-                  className="h-full w-full border-0"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
-              </div>
-              <div className="flex items-center justify-between gap-3 border-t border-[#0D0221]/10 px-5 py-3 text-xs">
-                <span className="font-medium text-[#0D0221]/75">
-                  {SITE_CONFIG.contact.mapCoordinates.label}
-                </span>
-                <a
-                  href={SITE_CONFIG.contact.mapCoordinates.googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1 font-medium text-[#4062BB] hover:underline"
-                >
-                  <span>Get Directions</span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </div>
-            </div>
-
-            {/* Contact Info Box */}
-            <div className="rounded-2xl border border-[#0D0221]/10 bg-white p-6 shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="font-display text-2xl font-medium text-[#0D0221]">
-                  Direct Contact
-                </h3>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#CDE6F5]/45 px-3 py-1 text-xs font-medium text-[#0D0221]">
-                  <Star className="h-3.5 w-3.5 fill-[#4062BB] text-[#4062BB]" />
-                  <span>{SITE_CONFIG.contact.rating.label}</span>
-                </span>
-              </div>
-              <ul className="mt-5 space-y-3.5 text-sm">
-                <li className="flex items-start gap-3 text-[#0D0221]/80">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#4062BB]" />
-                  <div>
-                    <p className="font-medium text-[#0D0221]">Office Address</p>
-                    <p className="mt-0.5 text-[#0D0221]/70">
-                      {SITE_CONFIG.contact.addressLine1},
-                      <br />
-                      {SITE_CONFIG.contact.addressLine2}
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#4062BB]" />
-                  <div>
-                    <p className="font-medium text-[#0D0221]">
-                      Primary Contact ({SITE_CONFIG.contact.primaryContactName})
-                    </p>
-                    <a
-                      href={SITE_CONFIG.contact.phoneHref}
-                      className="mt-0.5 inline-block text-[#4062BB] hover:underline"
-                    >
-                      {SITE_CONFIG.contact.phoneDisplay}
-                    </a>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#4062BB]" />
-                  <div>
-                    <p className="font-medium text-[#0D0221]">Email</p>
-                    <a
-                      href={`mailto:${SITE_CONFIG.contact.email}`}
-                      className="mt-0.5 inline-block break-all text-[#4062BB] hover:underline"
-                    >
-                      {SITE_CONFIG.contact.email}
-                    </a>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3 text-[#0D0221]/80">
-                  <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#4062BB]" />
-                  <div>
-                    <p className="font-medium text-[#0D0221]">Business Hours</p>
-                    <p className="mt-0.5 text-[#0D0221]/70">
-                      {SITE_CONFIG.contact.workingHours}
-                    </p>
-                  </div>
-                </li>
-              </ul>
-            </div>
+        {/* Full-Width Panoramic Google Maps Location Bar */}
+        <div
+          data-reveal
+          className="mt-12 overflow-hidden rounded-md border border-[#E0C188]/25 bg-[#32132B] shadow-lg"
+        >
+          <div className="relative h-64 w-full bg-[#32132B] sm:h-72">
+            <iframe
+              title="V.V Properties — Gandhinagar, Saibaba Colony, Coimbatore"
+              src={SITE_CONFIG.contact.mapCoordinates.embedUrl}
+              className="h-full w-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#E0C188]/20 px-5 py-3.5 text-xs">
+            <span className="inline-flex items-center gap-2 font-medium text-[#DBCCC6]">
+              <MapPin className="h-3.5 w-3.5 text-[#E0C188]" />
+              <span>{SITE_CONFIG.contact.fullAddress}</span>
+            </span>
+            <a
+              href={SITE_CONFIG.contact.mapCoordinates.googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center gap-1.5 font-semibold tracking-wide text-[#E0C188] uppercase hover:underline"
+            >
+              <span>Get Directions on Google Maps</span>
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
           </div>
         </div>
       </div>

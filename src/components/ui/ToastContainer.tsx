@@ -17,26 +17,26 @@ export function ToastContainer() {
       {toasts.map((toast) => {
         const icon =
           toast.type === 'success' ? (
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-[#49A078]" />
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-[#2F7D57]" />
           ) : toast.type === 'error' ? (
-            <AlertCircle className="h-4 w-4 shrink-0 text-[#F06543]" />
+            <AlertCircle className="h-4 w-4 shrink-0 text-[#D6866B]" />
           ) : (
-            <Info className="h-4 w-4 shrink-0 text-[#4062BB]" />
+            <Info className="h-4 w-4 shrink-0 text-[#CE8936]" />
           );
 
         return (
           <div
             key={toast.id}
-            className="flex items-start gap-3 rounded-xl border border-[#0D0221]/12 bg-white p-3.5 shadow-lg"
+            className="flex items-start gap-3 rounded-md border border-[#DBCCC6] bg-white p-3.5 shadow-[0_12px_32px_rgba(73,31,64,0.14)]"
             role="status"
           >
             <div className="mt-0.5">{icon}</div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-[#0D0221]">
+              <p className="text-sm font-medium text-[#491F40]">
                 {toast.title}
               </p>
               {toast.description && (
-                <p className="mt-0.5 text-xs text-[#0D0221]/70">
+                <p className="mt-0.5 text-xs text-[#491F40]/70">
                   {toast.description}
                 </p>
               )}
@@ -44,7 +44,7 @@ export function ToastContainer() {
             <button
               type="button"
               onClick={() => dismissToast(toast.id)}
-              className="rounded p-1 text-[#0D0221]/45 hover:bg-[#CDE6F5]/40 hover:text-[#0D0221]"
+              className="rounded p-1 text-[#491F40]/45 hover:bg-[#DBCCC6]/35 hover:text-[#491F40]"
               aria-label="Dismiss notification"
             >
               <X className="h-3.5 w-3.5" />

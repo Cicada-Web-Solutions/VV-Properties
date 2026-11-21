@@ -30,114 +30,128 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
     <Link
       href={`/properties/${property.slug || property.id}`}
       className={cn(
-        'group flex flex-col overflow-hidden rounded-2xl border border-[#0D0221]/10 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#4062BB]/45 hover:shadow-[0_16px_40px_rgba(13,2,33,0.07)]',
+        'group flex flex-col overflow-hidden rounded-md border border-[#DBCCC6] bg-white shadow-[0_10px_30px_rgba(73,31,64,0.06)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#CE8936]/75 hover:shadow-[0_24px_48px_rgba(73,31,64,0.14)]',
         className
       )}
     >
       {/* Cover Photography */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#CDE6F5]/30">
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#DBCCC6]/35">
         <IdbImage
           src={property.coverImage}
           alt={property.title}
           loading="lazy"
           className={cn(
-            'h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]',
+            'h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]',
             isSold && 'grayscale-[35%] opacity-90'
           )}
         />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#32132B]/55 to-transparent"
+          aria-hidden="true"
+        />
 
         {/* Top Badges Overlay */}
-        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-          <div>
+        <div className="absolute inset-x-3.5 top-3.5 flex items-start justify-between gap-2">
+          <div className="flex flex-col items-start gap-1.5">
+            <span className="rounded-sm bg-[#491F40]/92 px-2.5 py-1 text-[10.5px] font-semibold tracking-[0.16em] text-[#E0C188] uppercase shadow-sm backdrop-blur-xs">
+              {property.type}
+            </span>
             {hasOffer && property.offerBadgeText && !isSold && (
-              <span className="inline-block rounded-full bg-[#0D0221] px-3 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm">
+              <span className="inline-block rounded-sm bg-gradient-to-r from-[#E0C188] to-[#CE8936] px-2.5 py-1 text-[10px] font-bold tracking-wider text-[#491F40] uppercase shadow-sm">
                 {property.offerBadgeText}
               </span>
             )}
           </div>
           <StatusBadge
             status={property.availability}
-            className="bg-white/95 shadow-sm backdrop-blur-[2px]"
+            className="bg-white/95 shadow-sm backdrop-blur-xs"
           />
-        </div>
-
-        {/* Property Type Tag bottom-left */}
-        <div className="absolute bottom-3 left-3">
-          <span className="rounded-md bg-white/92 px-2.5 py-1 text-[11px] font-semibold tracking-wider text-[#0D0221] uppercase shadow-xs">
-            {property.type}
-          </span>
         </div>
       </div>
 
       {/* Card Body */}
-      <div className="flex flex-1 flex-col justify-between p-5 sm:p-6">
+      <div className="flex flex-1 flex-col justify-between p-6">
         <div>
-          <h3 className="font-display text-2xl leading-snug font-medium text-[#0D0221] transition-colors group-hover:text-[#4062BB]">
+          <h3 className="font-display text-[24px] leading-snug font-semibold text-[#491F40] transition-colors group-hover:text-[#9A5F1D]">
             {property.title}
           </h3>
 
-          <div className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-[#0D0221]/60">
-            <MapPin className="h-3.5 w-3.5 shrink-0 text-[#4062BB]" />
+          <div className="mt-1.5 flex items-center gap-1.5 text-[13px] text-[#491F40]/68">
+            <MapPin className="h-3.5 w-3.5 shrink-0 text-[#CE8936]" />
             <span className="truncate">
               {property.area}, {property.city}
             </span>
           </div>
 
-          {/* Highlighted INR Price */}
-          <div className="mt-4 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-            <span
-              className={cn(
-                'inline-flex items-baseline gap-2 rounded-lg border px-3 py-1 text-base font-bold tracking-tight',
-                isSold
-                  ? 'border-[#F06543]/30 bg-[#F06543]/8 text-[#0D0221]/75 line-through decoration-[#F06543]'
-                  : 'border-[#0D0221]/15 bg-[#CDE6F5]/25 text-[#0D0221]'
+          {/* Structured INR Valuation Plate */}
+          <div
+            className={cn(
+              'mt-4 rounded-sm border px-3.5 py-3',
+              isSold
+                ? 'border-[#D6866B]/35 bg-[#D6866B]/8'
+                : 'border-[#DBCCC6]/85 bg-[#FAF6F4]'
+            )}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[10px] font-semibold tracking-[0.16em] text-[#9A5F1D] uppercase">
+                {isSold ? 'Reference Price' : hasOffer ? 'Special Offer' : 'Listing Price'}
+              </span>
+              {hasOffer && !isSold && (
+                <s className="text-[11.5px] font-medium text-[#491F40]/45">
+                  {formatINR(property.priceInr)}
+                </s>
               )}
-            >
-              <span>{formatINR(displayPrice)}</span>
+            </div>
+            <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span
+                className={cn(
+                  'font-display text-[22px] leading-tight font-bold tracking-tight',
+                  isSold
+                    ? 'text-[#491F40]/65 line-through decoration-[#D6866B]'
+                    : 'text-[#491F40]'
+                )}
+              >
+                {formatINR(displayPrice)}
+              </span>
               {formatINRCompact(displayPrice) !== formatINR(displayPrice) && (
-                <span className="text-[11px] font-medium text-[#4062BB]">
+                <span className="text-xs font-semibold text-[#9A5F1D]">
                   ({formatINRCompact(displayPrice)})
                 </span>
               )}
-            </span>
-            {hasOffer && !isSold && (
-              <s className="text-xs font-medium text-[#0D0221]/45">
-                {formatINR(property.priceInr)}
-              </s>
-            )}
+            </div>
           </div>
 
-          <p className="mt-3.5 line-clamp-2 text-sm leading-relaxed text-[#0D0221]/72">
+          <p className="mt-3.5 line-clamp-2 text-[13.5px] leading-relaxed text-[#491F40]/72">
             {property.shortDescription}
           </p>
         </div>
 
         {/* Bottom Specs & View Details */}
-        <div className="mt-5 flex items-center justify-between border-t border-[#0D0221]/8 pt-4 text-xs text-[#0D0221]/65">
-          <div className="flex items-center gap-3.5">
+        <div className="mt-5 flex items-center justify-between gap-2 border-t border-[#DBCCC6]/75 pt-4 text-xs text-[#491F40]/72">
+          <div className="flex flex-wrap items-center gap-3">
             {typeof property.specifications.bedrooms === 'number' && (
               <span className="inline-flex items-center gap-1">
-                <BedDouble className="h-3.5 w-3.5 text-[#4062BB]" />
+                <BedDouble className="h-3.5 w-3.5 text-[#CE8936]" />
                 <span>{property.specifications.bedrooms} Beds</span>
               </span>
             )}
             {typeof property.specifications.bathrooms === 'number' && (
               <span className="inline-flex items-center gap-1">
-                <Bath className="h-3.5 w-3.5 text-[#4062BB]" />
+                <Bath className="h-3.5 w-3.5 text-[#CE8936]" />
                 <span>{property.specifications.bathrooms} Baths</span>
               </span>
             )}
             <span className="inline-flex items-center gap-1">
-              <Maximize2 className="h-3.5 w-3.5 text-[#4062BB]" />
+              <Maximize2 className="h-3.5 w-3.5 text-[#CE8936]" />
               <span>
                 {property.specifications.areaSqFt.toLocaleString('en-IN')} sq.ft
               </span>
             </span>
           </div>
 
-          <span className="inline-flex items-center gap-1 font-medium text-[#4062BB] transition-transform group-hover:translate-x-0.5">
+          <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-[#491F40] transition-colors group-hover:text-[#CE8936]">
             <span>Details</span>
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
           </span>
         </div>
       </div>

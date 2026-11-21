@@ -5,17 +5,19 @@ interface AccentHeadlineProps {
   accentWord?: string;
   as?: 'h1' | 'h2' | 'h3';
   className?: string;
+  accentClassName?: string;
 }
 
 /**
- * Renders editorial display headlines while emphasizing a designated keyword in Royal Blue (#4062BB),
- * echoing "Find a place to call home." and "Building Dreams, Creating Value."
+ * Renders editorial display headlines while emphasizing a designated keyword in Golden Ochre (#CE8936)
+ * or Warm Champagne Gold (#E0C188) on dark plum surfaces.
  */
 export function AccentHeadline({
   text,
   accentWord,
   as: Tag = 'h2',
   className,
+  accentClassName = 'text-[#CE8936]',
 }: AccentHeadlineProps) {
   if (!accentWord || !text.includes(accentWord)) {
     return <Tag className={className}>{text}</Tag>;
@@ -28,7 +30,7 @@ export function AccentHeadline({
   return (
     <Tag className={className}>
       {before}
-      <span className="text-[#4062BB]">{accentWord}</span>
+      <span className={accentClassName}>{accentWord}</span>
       {after}
     </Tag>
   );

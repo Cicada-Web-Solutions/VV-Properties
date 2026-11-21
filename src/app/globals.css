@@ -1,34 +1,37 @@
 @import "tailwindcss";
 
 /*
- * VV Properties — Official Design System Tokens
- * Drop licensed commercial DaVinci .woff2 font files into /public/fonts/
- * and uncomment the @font-face rule below to activate exact DaVinci glyphs.
- *
- * @font-face {
- *   font-family: 'DaVinci';
- *   src: url('/fonts/DaVinci-Regular.woff2') format('woff2');
- *   font-weight: 400;
- *   font-style: normal;
- *   font-display: swap;
- * }
+ * V.V Properties — Golden Raisin Editorial Design System Tokens
+ * Exact Source Palette:
+ *   #491F40 — Deep Raisin Plum (Primary dark anchor, headings, dark surfaces)
+ *   #DBCCC6 — Warm Taupe Stone (Borders, subtle dividers, soft stone surfaces)
+ *   #D6866B — Terracotta Clay (Warm editorial accent, sold/alert cues)
+ *   #DBA79C — Dusty Rose Clay (Delicate secondary tint & highlights)
+ *   #CE8936 — Golden Ochre (Primary CTA accent, active highlights, icons)
+ *   #E0C188 — Warm Champagne Gold (Light gold accents & rules on dark plum)
  */
 
 :root {
-  --vv-navy: #0D0221;
-  --vv-royal: #4062BB;
-  --vv-ice: #CDE6F5;
-  --vv-green: #49A078;
-  --vv-coral: #F06543;
+  --vv-raisin: #491F40;
+  --vv-raisin-deep: #32132B;
+  --vv-stone: #DBCCC6;
+  --vv-terracotta: #D6866B;
+  --vv-blush: #DBA79C;
+  --vv-ochre: #CE8936;
+  --vv-champagne: #E0C188;
+  --vv-ivory: #FAF6F4;
   --vv-white: #FFFFFF;
 }
 
 @theme inline {
-  --color-navy: var(--vv-navy);
-  --color-royal: var(--vv-royal);
-  --color-ice: var(--vv-ice);
-  --color-emerald: var(--vv-green);
-  --color-coral: var(--vv-coral);
+  --color-raisin: var(--vv-raisin);
+  --color-raisin-deep: var(--vv-raisin-deep);
+  --color-stone: var(--vv-stone);
+  --color-terracotta: var(--vv-terracotta);
+  --color-blush: var(--vv-blush);
+  --color-ochre: var(--vv-ochre);
+  --color-champagne: var(--vv-champagne);
+  --color-ivory: var(--vv-ivory);
   --color-canvas: var(--vv-white);
   --font-display: 'DaVinci', var(--font-cormorant), Georgia, serif;
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
@@ -36,9 +39,9 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
-  background-color: #FFFFFF;
-  color: #0D0221;
+  scroll-padding-top: 88px;
+  background-color: #FAF6F4;
+  color: #491F40;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -48,8 +51,8 @@ html {
 }
 
 body {
-  background-color: #FFFFFF;
-  color: #0D0221;
+  background-color: #FAF6F4;
+  color: #491F40;
   font-family: var(--font-sans);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -60,18 +63,89 @@ body {
   font-family: var(--font-display);
 }
 
+/* Architectural editorial corner frame brackets */
+.vv-frame-corners {
+  position: relative;
+  padding: 12px;
+}
+
+.vv-frame-corners::before,
+.vv-frame-corners::after,
+.vv-frame-corners > .vv-c3,
+.vv-frame-corners > .vv-c4 {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: #CE8936;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.vv-frame-corners::before {
+  top: 0;
+  left: 0;
+  border-top: 1.5px solid #CE8936;
+  border-left: 1.5px solid #CE8936;
+}
+
+.vv-frame-corners::after {
+  top: 0;
+  right: 0;
+  border-top: 1.5px solid #CE8936;
+  border-right: 1.5px solid #CE8936;
+}
+
+.vv-frame-corners > .vv-c3 {
+  bottom: 0;
+  left: 0;
+  border-bottom: 1.5px solid #CE8936;
+  border-left: 1.5px solid #CE8936;
+}
+
+.vv-frame-corners > .vv-c4 {
+  bottom: 0;
+  right: 0;
+  border-bottom: 1.5px solid #CE8936;
+  border-right: 1.5px solid #CE8936;
+}
+
+@keyframes vvScrollLine {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(200%);
+    opacity: 0;
+  }
+}
+
+.animate-vv-scroll {
+  animation: vvScrollLine 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-vv-scroll {
+    animation: none;
+  }
+}
+
 /* Editorial subtle custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f6f9fc;
+  background: #FAF6F4;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(13, 2, 33, 0.22);
+  background: rgba(73, 31, 64, 0.25);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(64, 98, 187, 0.55);
+  background: rgba(206, 137, 54, 0.72);
 }

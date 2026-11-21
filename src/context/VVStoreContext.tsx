@@ -45,6 +45,20 @@ import {
   fetchPropertiesFromSupabase,
   savePropertyToSupabase,
 } from '@/lib/supabase/properties';
+import {
+  fetchBannersFromCloud,
+  saveBannerToCloud,
+  deleteBannerFromCloud,
+  fetchTestimonialsFromCloud,
+  saveTestimonialToCloud,
+  deleteTestimonialFromCloud,
+  fetchEnquiriesFromCloud,
+  saveEnquiryToCloud,
+  patchEnquiryStatusInCloud,
+  deleteEnquiryFromCloud,
+  fetchActivityLogsFromCloud,
+  postActivityLogInCloud,
+} from '@/lib/supabase/cloudSync';
 import type {
   ActivityLogEntry,
   AdminProfile,
@@ -151,7 +165,7 @@ const VVStoreContext = createContext<VVStoreContextValue | null>(null);
 function resolveActorName(explicit?: string): string {
   if (explicit) return explicit;
   const session = getAdminSession();
-  return session?.displayName || 'Victor Paul';
+  return session?.displayName || session?.name || 'Team Member';
 }
 
 function createLogItem(
@@ -245,16 +259,36 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
     const refreshFromStore = async () => {
       const loaded = await loadPersistedCatalog();
 
-      // Sync from authoritative Supabase Cloud database
+      // Sync all 5 domains in parallel from authoritative Supabase Cloud database
       try {
-        const cloudProperties = await fetchPropertiesFromSupabase();
-        if (cloudProperties !== null) {
-          // Cloud database is authoritative (including empty [] when properties deleted)
-          loaded.properties = cloudProperties;
-          void persistCatalogSnapshot(loaded, false);
+        const [cloudProps, cloudBanners, cloudTests, cloudEnqs, cloudLogs] =
+          await Promise.allSettled([
+            fetchPropertiesFromSupabase(),
+            fetchBannersFromCloud(),
+            fetchTestimonialsFromCloud(),
+            fetchEnquiriesFromCloud(),
+            fetchActivityLogsFromCloud(),
+          ]);
+
+        if (cloudProps.status === 'fulfilled' && cloudProps.value !== null) {
+          loaded.properties = cloudProps.value;
         }
+        if (cloudBanners.status === 'fulfilled' && cloudBanners.value !== null && cloudBanners.value.length > 0) {
+          loaded.heroSlides = cloudBanners.value;
+        }
+        if (cloudTests.status === 'fulfilled' && cloudTests.value !== null && cloudTests.value.length > 0) {
+          loaded.testimonials = cloudTests.value;
+        }
+        if (cloudEnqs.status === 'fulfilled' && cloudEnqs.value !== null) {
+          loaded.enquiries = cloudEnqs.value;
+        }
+        if (cloudLogs.status === 'fulfilled' && cloudLogs.value !== null && cloudLogs.value.length > 0) {
+          loaded.activityLogs = cloudLogs.value;
+        }
+
+        void persistCatalogSnapshot(loaded, false);
       } catch (err) {
-        console.warn('[VVStore] Supabase properties sync warning:', err);
+        console.warn('[VVStore] Supabase cloud sync warning:', err);
       }
 
       if (!cancelled) {
@@ -305,19 +339,36 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
   const refreshCatalog = useCallback(async () => {
     try {
       console.log('[VVStore] refreshCatalog triggered: fetching latest from Supabase...');
-      const cloudProperties = await fetchPropertiesFromSupabase();
-      if (cloudProperties !== null) {
-        setSnapshot((curr) => {
-          const next = {
-            ...curr,
-            properties: cloudProperties,
-            updatedAt: new Date().toISOString(),
-          };
-          snapshotRef.current = next;
-          void persistCatalogSnapshot(next, false);
-          return next;
-        });
-      }
+      const [cloudProps, cloudBanners, cloudTests, cloudEnqs, cloudLogs] =
+        await Promise.allSettled([
+          fetchPropertiesFromSupabase(),
+          fetchBannersFromCloud(),
+          fetchTestimonialsFromCloud(),
+          fetchEnquiriesFromCloud(),
+          fetchActivityLogsFromCloud(),
+        ]);
+
+      setSnapshot((curr) => {
+        const next = { ...curr, updatedAt: new Date().toISOString() };
+        if (cloudProps.status === 'fulfilled' && cloudProps.value !== null) {
+          next.properties = cloudProps.value;
+        }
+        if (cloudBanners.status === 'fulfilled' && cloudBanners.value !== null && cloudBanners.value.length > 0) {
+          next.heroSlides = cloudBanners.value;
+        }
+        if (cloudTests.status === 'fulfilled' && cloudTests.value !== null && cloudTests.value.length > 0) {
+          next.testimonials = cloudTests.value;
+        }
+        if (cloudEnqs.status === 'fulfilled' && cloudEnqs.value !== null) {
+          next.enquiries = cloudEnqs.value;
+        }
+        if (cloudLogs.status === 'fulfilled' && cloudLogs.value !== null && cloudLogs.value.length > 0) {
+          next.activityLogs = cloudLogs.value;
+        }
+        snapshotRef.current = next;
+        void persistCatalogSnapshot(next, false);
+        return next;
+      });
     } catch (err) {
       console.warn('[VVStore] refreshCatalog error:', err);
     }
@@ -335,13 +386,15 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
 
   const recordActivity = useCallback(
     async (action: string, moduleName = 'General', actorName?: string) => {
+      const resolved = resolveActorName(actorName);
+      void postActivityLogInCloud(action, moduleName, resolved);
       await commitUpdate((curr) => ({
         ...curr,
         activityLogs: appendLog(
           curr.activityLogs ?? [],
           action,
           moduleName,
-          actorName
+          resolved
         ),
       }));
     },
@@ -548,6 +601,8 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         ...slide,
         id: `slide-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       };
+      void saveBannerToCloud(created);
+      void postActivityLogInCloud(`Added banner slide "${created.headline}"`, 'Banners', resolveActorName());
       await commitUpdate((curr) => {
         const nextSlides = [created, ...curr.heroSlides].map((s, idx) => ({
           ...s,
@@ -573,11 +628,16 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
       if (existing && patch.image && patch.image !== existing.image) {
         void deleteMediaRefs([existing.image]);
       }
+      if (existing) {
+        const updated = { ...existing, ...patch };
+        void saveBannerToCloud(updated);
+      }
+      const actionDesc =
+        patch.active !== undefined
+          ? `${patch.active ? 'Activated' : 'Deactivated'} banner slide "${existing?.headline ?? id}"`
+          : `Updated banner slide "${patch.headline ?? existing?.headline ?? id}"`;
+      void postActivityLogInCloud(actionDesc, 'Banners', resolveActorName());
       await commitUpdate((curr) => {
-        const actionDesc =
-          patch.active !== undefined
-            ? `${patch.active ? 'Activated' : 'Deactivated'} banner slide "${existing?.headline ?? id}"`
-            : `Updated banner slide "${patch.headline ?? existing?.headline ?? id}"`;
         return {
           ...curr,
           heroSlides: curr.heroSlides
@@ -594,6 +654,8 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
     async (id: string) => {
       const target = snapshotRef.current.heroSlides.find((s) => s.id === id);
       if (target) void deleteMediaRefs([target.image]);
+      void deleteBannerFromCloud(id);
+      void postActivityLogInCloud(`Deleted banner slide "${target?.headline ?? id}"`, 'Banners', resolveActorName());
       await commitUpdate((curr) => ({
         ...curr,
         heroSlides: curr.heroSlides
@@ -621,9 +683,11 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         const temp = sorted[index];
         sorted[index] = sorted[swapIndex];
         sorted[swapIndex] = temp;
+        const mapped = sorted.map((s, idx) => ({ ...s, order: idx + 1 }));
+        mapped.forEach((s) => void saveBannerToCloud(s));
         return {
           ...curr,
-          heroSlides: sorted.map((s, idx) => ({ ...s, order: idx + 1 })),
+          heroSlides: mapped,
           activityLogs: appendLog(
             curr.activityLogs ?? [],
             `Reordered banner slide "${temp.headline}" to position #${swapIndex + 1}`,
@@ -650,9 +714,11 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         }
         const [moved] = sorted.splice(fromIndex, 1);
         sorted.splice(toIndex, 0, moved);
+        const mapped = sorted.map((s, idx) => ({ ...s, order: idx + 1 }));
+        mapped.forEach((s) => void saveBannerToCloud(s));
         return {
           ...curr,
-          heroSlides: sorted.map((s, idx) => ({ ...s, order: idx + 1 })),
+          heroSlides: mapped,
           activityLogs: appendLog(
             curr.activityLogs ?? [],
             `Reordered carousel slide: moved "${moved.headline}" to position #${toIndex + 1}`,
@@ -671,6 +737,8 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         id: `test-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         createdAt: new Date().toISOString(),
       };
+      void saveTestimonialToCloud(created);
+      void postActivityLogInCloud(`Added customer testimonial from "${created.clientName}" (${created.rating} stars)`, 'Testimonials', resolveActorName());
       await commitUpdate((curr) => ({
         ...curr,
         testimonials: [created, ...curr.testimonials],
@@ -690,6 +758,11 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
       if (existing?.photo && patch.photo && patch.photo !== existing.photo) {
         void deleteMediaRefs([existing.photo]);
       }
+      if (existing) {
+        const updated = { ...existing, ...patch };
+        void saveTestimonialToCloud(updated);
+      }
+      void postActivityLogInCloud(`Updated testimonial from "${patch.clientName ?? existing?.clientName ?? id}"`, 'Testimonials', resolveActorName());
       await commitUpdate((curr) => ({
         ...curr,
         testimonials: curr.testimonials.map((t) =>
@@ -709,6 +782,8 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
     async (id: string) => {
       const target = snapshotRef.current.testimonials.find((t) => t.id === id);
       if (target?.photo) void deleteMediaRefs([target.photo]);
+      void deleteTestimonialFromCloud(id);
+      void postActivityLogInCloud(`Deleted testimonial from "${target?.clientName ?? id}"`, 'Testimonials', resolveActorName());
       await commitUpdate((curr) => ({
         ...curr,
         testimonials: curr.testimonials.filter((t) => t.id !== id),
@@ -725,6 +800,9 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
   const toggleTestimonialVisibility = useCallback(
     async (id: string) => {
       const target = snapshotRef.current.testimonials.find((t) => t.id === id);
+      if (target) {
+        void saveTestimonialToCloud({ ...target, visible: !target.visible });
+      }
       await commitUpdate((curr) => ({
         ...curr,
         testimonials: curr.testimonials.map((t) =>
@@ -748,6 +826,19 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
         status: 'new',
         createdAt: new Date().toISOString(),
       };
+      void saveEnquiryToCloud({
+        fullName: payload.fullName,
+        phone: payload.phone,
+        email: payload.email,
+        propertyId: payload.propertyId,
+        propertyTitle: payload.propertyTitle,
+        message: payload.message,
+      });
+      void postActivityLogInCloud(
+        `Received website enquiry from "${created.fullName}" for "${created.propertyTitle}"`,
+        'Enquiries',
+        'Public Web Form'
+      );
       await commitUpdate((curr) => ({
         ...curr,
         enquiries: [created, ...curr.enquiries],
@@ -776,6 +867,12 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
               ? 'Closed'
               : 'None';
 
+      void patchEnquiryStatusInCloud(id, status);
+      void postActivityLogInCloud(
+        `Labeled lead "${existing.fullName}" as ${statusLabel}`,
+        'Enquiries',
+        resolveActorName()
+      );
       await commitUpdate((curr) => ({
         ...curr,
         enquiries: curr.enquiries.map((e) =>
@@ -794,6 +891,12 @@ export function VVStoreProvider({ children }: { children: React.ReactNode }) {
   const deleteEnquiry = useCallback(
     async (id: string) => {
       const existing = snapshotRef.current.enquiries.find((e) => e.id === id);
+      void deleteEnquiryFromCloud(id);
+      void postActivityLogInCloud(
+        `Deleted enquiry from "${existing?.fullName ?? id}"`,
+        'Enquiries',
+        resolveActorName()
+      );
       await commitUpdate((curr) => ({
         ...curr,
         enquiries: curr.enquiries.filter((e) => e.id !== id),
